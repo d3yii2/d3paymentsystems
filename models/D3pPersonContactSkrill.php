@@ -2,15 +2,15 @@
 
 namespace d3yii2\d3paymentsystems\models;
 
-
-use d3modules\d3classifiers\dictionaries\ClCountriesLangDictionary;
+use d3yii2\d3paymentsystems\components\PersonSettingSkrill;
 use Yii;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
+use yii2d3\d3persons\models\D3pPersonContactExtInterface;
 
 /**
  * This is the model class for table "d3p_person_contact".
  */
-class D3pPersonContactSkrill extends BaseD3pPersonContact
+class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonContactExtInterface
 {
 
     private const STATUS_ACTUAL = 'ACTUAL';
@@ -22,7 +22,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact
     public ?string $currency = null;
     public ?string $status = null;
 
-    public $currencyList = [];
+    public array $currencyList = [];
 
     public function attributeLabels()
     {
@@ -80,7 +80,13 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact
     public function afterFind()
     {
         parent::afterFind();
-        [$this->currency, $this->contact_value, $this->status] = explode(':', $this->contact_value);
+        $explode = explode(':', $this->contact_value);
+        if (count($explode) === 1) {
+            $this->currency = PersonSettingSkrill::CURRENCY_MULTI;
+            $this->status = self::STATUS_ACTUAL;
+        } else {
+            [$this->currency, $this->contact_value, $this->status] = $explode;
+        }
     }
 
     public function setStatusActual(): void
@@ -114,4 +120,10 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact
     }
 
 
+    public function showContactValue(): string
+    {
+        return $this->currency . ' : ' .
+            $this->contact_value . ' : ' .
+            $this->status;
+    }
 }

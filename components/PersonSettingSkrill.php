@@ -2,13 +2,14 @@
 
 namespace d3yii2\d3paymentsystems\components;
 
-use d3modules\d3classifiers\dictionaries\ClCountriesLangDictionary;
 use kartik\form\ActiveForm;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii2d3\d3persons\components\PersonContactTypeInterface;
 use d3yii2\d3paymentsystems\models\D3pPersonContactSkrill;
+
 
 class PersonSettingSkrill extends Component implements PersonContactTypeInterface
 {
@@ -21,17 +22,7 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
     public ?int $contactTypeId = null;
 
     /**
-     * @throws \Throwable
-     */
-    public function showValue(array $options = null): string
-    {
-        return $this->model->currency . ' : ' .
-            $this->model->contact_value . ' : ' .
-            $this->model->status;
-    }
-
-    /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function inputPersonSettingValue(ActiveForm $form): string
     {
@@ -53,15 +44,7 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
     }
 
     /**
-     * @return array
-     */
-    private function getFlagList(): array
-    {
-        return ClCountriesLangDictionary::getCodeNameList('en');
-    }
-
-    /**
-     * @throws \yii\base\Exception
+     * @throws Exception
      */
     public function createNewModel(int $personId)
     {

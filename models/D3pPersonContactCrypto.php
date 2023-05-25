@@ -2,15 +2,14 @@
 
 namespace d3yii2\d3paymentsystems\models;
 
-
-use d3modules\d3classifiers\dictionaries\ClCountriesLangDictionary;
 use Yii;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
+use yii2d3\d3persons\models\D3pPersonContactExtInterface;
 
 /**
  * This is the model class for table "d3p_person_contact".
  */
-class D3pPersonContactCrypto extends BaseD3pPersonContact
+class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonContactExtInterface
 {
 
     private const STATUS_ACTUAL = 'ACTUAL';
@@ -75,7 +74,7 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact
         );
     }
 
-    public function validateSubtype()
+    public function validateSubtype(): void
     {
         if (!$this->type) {
             return;
@@ -115,6 +114,14 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact
     {
         parent::afterFind();
         [$this->type, $this->subType, $this->contact_value, $this->status] = explode(':', $this->contact_value);
+    }
+
+    public function showContactValue(array $options = null): string
+    {
+        return $this->type . ' ' .
+            '(' . $this->subType . '): ' .
+            $this->contact_value . ' : ' .
+            $this->status;
     }
 
     public function setStatusActual(): void

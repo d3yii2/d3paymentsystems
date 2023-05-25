@@ -3,14 +3,14 @@
 namespace d3yii2\d3paymentsystems\models;
 
 
-use d3modules\d3classifiers\dictionaries\ClCountriesLangDictionary;
 use Yii;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
+use yii2d3\d3persons\models\D3pPersonContactExtInterface;
 
 /**
  * This is the model class for table "d3p_person_contact".
  */
-class D3pPersonContactLuxon extends BaseD3pPersonContact
+class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonContactExtInterface
 {
 
     private const STATUS_ACTUAL = 'ACTUAL';
@@ -110,5 +110,12 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact
     public function isStatusClosed(): bool
     {
         return $this->status === self::STATUS_CLOSED;
+    }
+
+    public function showContactValue(): string
+    {
+        return $this->fullName . ' ' .
+            $this->contact_value . ' : ' .
+            $this->status;
     }
 }

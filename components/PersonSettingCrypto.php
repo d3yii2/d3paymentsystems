@@ -7,6 +7,7 @@ use d3yii2\d3paymentsystems\models\D3pPersonContactCrypto;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
 use yii2d3\d3persons\components\PersonContactTypeInterface;
 
 class PersonSettingCrypto extends Component implements PersonContactTypeInterface
@@ -17,19 +18,9 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
     public ?int $contactTypeId = null;
     public array $typeDef = [];
 
-    /**
-     * @throws \Throwable
-     */
-    public function showValue(array $options = null): string
-    {
-        return $this->model->type . ' ' .
-            '(' . $this->model->subType . '): ' .
-            $this->model->contact_value . ' : ' .
-            $this->model->status;
-    }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function inputPersonSettingValue(ActiveForm $form): string
     {
@@ -39,7 +30,7 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
                 $list[$type . ':' . $subType] = $type . ' (' . $subType . ')';
             }
         }
-        $typeList = array_keys($this->typeDef);
+
         return $form
                 ->field($this->model, 'type')
                 ->dropDownList($list) .
@@ -60,7 +51,7 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
     }
 
     /**
-     * @throws \yii\base\Exception
+     * @throws Exception
      */
     public function createNewModel(int $personId)
     {
