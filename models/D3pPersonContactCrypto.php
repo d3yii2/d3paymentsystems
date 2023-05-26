@@ -124,6 +124,13 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
             $this->status;
     }
 
+    public function showShortContactValue(array $options = null): string
+    {
+        return $this->type . ' ' .
+            '(' . $this->subType . '): ' .
+            $this->contact_value;
+    }
+
     public function setStatusActual(): void
     {
         $this->status = self::STATUS_ACTUAL;

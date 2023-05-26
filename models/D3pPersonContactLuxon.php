@@ -118,4 +118,10 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
             $this->contact_value . ' : ' .
             $this->status;
     }
+
+    public function showShortContactValue(): string
+    {
+        return $this->fullName . ' ' .
+            $this->contact_value;
+    }
 }

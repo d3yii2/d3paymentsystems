@@ -126,4 +126,10 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
             $this->contact_value . ' : ' .
             $this->status;
     }
+
+    public function showShortContactValue(): string
+    {
+        return $this->currency . ' : ' .
+            $this->contact_value;
+    }
 }
