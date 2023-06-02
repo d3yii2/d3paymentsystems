@@ -40,7 +40,7 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
 
     public function rules(): ?array
     {
-
+        $me = $this;
         return array_merge(
             parent::rules(),
             [
@@ -56,8 +56,9 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
                 [
                     'type',
                     'in',
-                    'range' => array_keys($this->typeDef),
-                    'enableClientValidation' => false
+                    'range' => static function () use ($me) {
+                        return array_keys($me->typeDef);
+                    }
                 ],
                 [
                     'subType',

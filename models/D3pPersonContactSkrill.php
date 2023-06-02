@@ -39,7 +39,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
 
     public function rules(): ?array
     {
-
+        $me = $this;
         return array_merge(
             parent::rules(),
             [
@@ -50,7 +50,9 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
                 [
                     'currency',
                     'in',
-                    'range' => $this->currencyList
+                    'range' => static function () use ($me){
+                        return $me->currencyList;
+                    }
                 ],
                 [
                     'status',

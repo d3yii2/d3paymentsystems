@@ -17,26 +17,25 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
     public const CURRENCY_EUR = 'EUR';
     public const CURRENCY_USD = 'USD';
     public const CURRENCY_MULTI = 'MULTI';
-    public ?D3pPersonContactSkrill $model = null;
     public array $currencyList = [];
     public ?int $contactTypeId = null;
 
     /**
      * @throws InvalidConfigException
      */
-    public function inputPersonSettingValue(ActiveForm $form): string
+    public function inputPersonSettingValue(ActiveForm $form, $model): string
     {
         return $form
-                ->field($this->model, 'currency')
+                ->field($model, 'currency')
                 ->dropDownList(
-                    array_combine($this->currencyList, $this->currencyList),
+                    array_combine($model->currencyList, $model->currencyList),
                     ['prompt' => Yii::t('d3persons', 'Select')]
                 ) .
             $form
-                ->field($this->model, 'contact_value')
+                ->field($model, 'contact_value')
                 ->textInput() .
             $form
-                ->field($this->model, 'status')
+                ->field($model, 'status')
                 ->dropDownList(
                     array_combine(D3pPersonContactSkrill::STATUS_LISTS, D3pPersonContactSkrill::STATUS_LISTS),
                     ['prompt' => Yii::t('d3persons', 'Select')]
@@ -51,19 +50,22 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
         if (!$this->contactTypeId) {
             throw new Exception('Undefined contactTypeId');
         }
-        $this->model = new D3pPersonContactSkrill;
-        $this->model->contact_type = $this->contactTypeId;
-        $this->model->person_id = $personId;
-        $this->model->setGroupSettings();
-        $this->model->setStatusActual();
-        $this->model->currencyList = $this->currencyList;
-        return $this->model;
+        $model = new D3pPersonContactSkrill;
+        $model->contact_type = $this->contactTypeId;
+        $model->person_id = $personId;
+        $model->setGroupSettings();
+        $model->setStatusActual();
+        $model->currencyList = $this->currencyList;
+        return $model;
     }
 
-    public function findModel(int $id)
+    public function loadModel(array $attributes)
     {
-        $this->model = D3pPersonContactSkrill::findOne($id);
-        $this->model->currencyList = $this->currencyList;
-        return $this->model;
+        $model = new D3pPersonContactSkrill();
+        $model->setAttributes($attributes);
+        $model->setIsNewRecord(false);
+        $model->afterFind();
+        $model->currencyList = $this->currencyList;
+        return $model;
     }
 }

@@ -22,7 +22,7 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
     /**
      * @throws InvalidConfigException
      */
-    public function inputPersonSettingValue(ActiveForm $form): string
+    public function inputPersonSettingValue(ActiveForm $form, $model): string
     {
         $list = [];
         foreach ($this->typeDef as $type => $subTypes) {
@@ -32,13 +32,13 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
         }
 
         return $form
-                ->field($this->model, 'type')
+                ->field($model, 'type')
                 ->dropDownList($list) .
             $form
-                ->field($this->model, 'contact_value')
+                ->field($model, 'contact_value')
                 ->textInput() .
             $form
-                ->field($this->model, 'status')
+                ->field($model, 'status')
                 ->dropDownList(
                     array_combine(
                         D3pPersonContactCrypto::STATUS_LISTS,
@@ -58,19 +58,22 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
         if (!$this->contactTypeId) {
             throw new Exception('Undefined contactTypeId');
         }
-        $this->model = new D3pPersonContactCrypto;
-        $this->model->contact_type = $this->contactTypeId;
-        $this->model->person_id = $personId;
-        $this->model->setGroupSettings();
-        $this->model->setStatusActual();
-        $this->model->typeDef = $this->typeDef;
-        return $this->model;
+        $model = new D3pPersonContactCrypto;
+        $model->contact_type = $this->contactTypeId;
+        $model->person_id = $personId;
+        $model->setGroupSettings();
+        $model->setStatusActual();
+        $model->typeDef = $this->typeDef;
+        return $model;
     }
 
-    public function findModel(int $id)
+    public function loadModel(array $attributes)
     {
-        $this->model = D3pPersonContactCrypto::findOne($id);
-        $this->model->typeDef = $this->typeDef;
-        return $this->model;
+        $model = new D3pPersonContactCrypto();
+        $model->setAttributes($attributes);
+        $model->setIsNewRecord(false);
+        $model->afterFind();
+        $model->typeDef = $this->typeDef;
+        return $model;
     }
 }

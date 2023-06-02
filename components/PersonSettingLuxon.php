@@ -20,16 +20,16 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
     /**
      * @throws InvalidConfigException
      */
-    public function inputPersonSettingValue(ActiveForm $form): string
+    public function inputPersonSettingValue(ActiveForm $form, $model): string
     {
         return $form
-                ->field($this->model, 'fullName')
+                ->field($model, 'fullName')
                 ->textInput() .
             $form
-                ->field($this->model, 'contact_value')
+                ->field($model, 'contact_value')
                 ->textInput() .
             $form
-                ->field($this->model, 'status')
+                ->field($model, 'status')
                 ->dropDownList(
                     array_combine(
                         D3pPersonContactLuxon::STATUS_LISTS,
@@ -49,17 +49,20 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
         if (!$this->contactTypeId) {
             throw new Exception('Undefined contactTypeId');
         }
-        $this->model = new D3pPersonContactLuxon;
-        $this->model->contact_type = $this->contactTypeId;
-        $this->model->person_id = $personId;
-        $this->model->setGroupSettings();
-        $this->model->setStatusActual();
-        return $this->model;
+        $model = new D3pPersonContactLuxon;
+        $model->contact_type = $this->contactTypeId;
+        $model->person_id = $personId;
+        $model->setGroupSettings();
+        $model->setStatusActual();
+        return $model;
     }
 
-    public function findModel(int $id)
+    public function loadModel(array $attributes)
     {
-        $this->model = D3pPersonContactLuxon::findOne($id);
-        return $this->model;
+        $model = new D3pPersonContactLuxon();
+        $model->setAttributes($attributes);
+        $model->setIsNewRecord(false);
+        $model->afterFind();
+        return $model;
     }
 }
