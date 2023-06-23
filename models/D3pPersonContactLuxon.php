@@ -2,7 +2,7 @@
 
 namespace d3yii2\d3paymentsystems\models;
 
-
+use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
 use Yii;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
 use yii2d3\d3persons\models\D3pPersonContactExtInterface;
@@ -21,8 +21,15 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
 
     public ?string $status = null;
     public ?string $fullName = null;
+    public ?string $currency = null;
 
-    public function attributeLabels()
+    public function init(): void
+    {
+        parent::init();
+        $this->currency = CurrenciesDictionary::CURRENCY_USD;
+    }
+
+    public function attributeLabels(): array
     {
         return array_merge(
             parent::attributeLabels(),
@@ -65,7 +72,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     }
 
 
-    public function beforeSave($insert)
+    public function beforeSave($insert): bool
     {
         if (!parent::beforeSave($insert)) {
             return false;
@@ -76,7 +83,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
         return true;
     }
 
-    public function afterFind()
+    public function afterFind(): void
     {
         parent::afterFind();
         [$this->fullName, $this->contact_value, $this->status] = explode(':', $this->contact_value);

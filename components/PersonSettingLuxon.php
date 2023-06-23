@@ -13,7 +13,6 @@ use yii2d3\d3persons\components\PersonContactTypeInterface;
 class PersonSettingLuxon extends Component implements PersonContactTypeInterface
 {
 
-
     public ?D3pPersonContactLuxon $model = null;
     public ?int $contactTypeId = null;
 
@@ -42,6 +41,8 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
     }
 
     /**
+     * @param int $personId
+     * @return D3pPersonContactLuxon
      * @throws Exception
      */
     public function createNewModel(int $personId)
@@ -57,6 +58,10 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
         return $model;
     }
 
+    /**
+     * @param array $attributes
+     * @return D3pPersonContactLuxon
+     */
     public function loadModel(array $attributes)
     {
         $model = new D3pPersonContactLuxon();

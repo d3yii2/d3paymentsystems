@@ -12,8 +12,6 @@ use yii2d3\d3persons\components\PersonContactTypeInterface;
 
 class PersonSettingCrypto extends Component implements PersonContactTypeInterface
 {
-
-
     public ?D3pPersonContactCrypto $model = null;
     public ?int $contactTypeId = null;
     public array $typeDef = [];
@@ -51,6 +49,8 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
     }
 
     /**
+     * @param int $personId
+     * @return D3pPersonContactCrypto
      * @throws Exception
      */
     public function createNewModel(int $personId)
@@ -67,6 +67,10 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
         return $model;
     }
 
+    /**
+     * @param array $attributes
+     * @return D3pPersonContactCrypto
+     */
     public function loadModel(array $attributes)
     {
         $model = new D3pPersonContactCrypto();

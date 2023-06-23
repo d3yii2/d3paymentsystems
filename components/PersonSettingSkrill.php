@@ -14,8 +14,6 @@ use d3yii2\d3paymentsystems\models\D3pPersonContactSkrill;
 class PersonSettingSkrill extends Component implements PersonContactTypeInterface
 {
 
-    public const CURRENCY_EUR = 'EUR';
-    public const CURRENCY_USD = 'USD';
     public const CURRENCY_MULTI = 'MULTI';
     public array $currencyList = [];
     public ?int $contactTypeId = null;
@@ -43,6 +41,8 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
     }
 
     /**
+     * @param int $personId
+     * @return D3pPersonContactSkrill
      * @throws Exception
      */
     public function createNewModel(int $personId)
@@ -59,6 +59,10 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
         return $model;
     }
 
+    /**
+     * @param array $attributes
+     * @return D3pPersonContactSkrill
+     */
     public function loadModel(array $attributes)
     {
         $model = new D3pPersonContactSkrill();

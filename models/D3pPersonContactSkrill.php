@@ -2,7 +2,8 @@
 
 namespace d3yii2\d3paymentsystems\models;
 
-use d3yii2\d3paymentsystems\components\PersonSettingSkrill;
+
+use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
 use Yii;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
 use yii2d3\d3persons\models\D3pPersonContactExtInterface;
@@ -24,7 +25,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
 
     public array $currencyList = [];
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return array_merge(
             parent::attributeLabels(),
@@ -68,7 +69,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
     }
 
 
-    public function beforeSave($insert)
+    public function beforeSave($insert): bool
     {
         if (!parent::beforeSave($insert)) {
             return false;
@@ -79,12 +80,12 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         return true;
     }
 
-    public function afterFind()
+    public function afterFind(): void
     {
         parent::afterFind();
         $explode = explode(':', $this->contact_value);
         if (count($explode) === 1) {
-            $this->currency = PersonSettingSkrill::CURRENCY_MULTI;
+            $this->currency = CurrenciesDictionary::CURRENCY_MULTI;
             $this->status = self::STATUS_ACTUAL;
         } else {
             [$this->currency, $this->contact_value, $this->status] = $explode;
