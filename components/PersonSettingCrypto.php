@@ -22,16 +22,9 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
      */
     public function inputPersonSettingValue(ActiveForm $form, $model): string
     {
-        $list = [];
-        foreach ($this->typeDef as $type => $subTypes) {
-            foreach ($subTypes as $subType) {
-                $list[$type . ':' . $subType] = $type . ' (' . $subType . ')';
-            }
-        }
-
         return $form
-                ->field($model, 'type')
-                ->dropDownList($list) .
+                ->field($model, 'fullType')
+                ->dropDownList($model->typeList()) .
             $form
                 ->field($model, 'contact_value')
                 ->textInput() .

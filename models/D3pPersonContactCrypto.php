@@ -23,6 +23,8 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
     public ?string $type = null;
     public ?string $subType = null;
 
+    public ?string $fullType = null;
+
     public array $typeDef = [];
     public ?string $currency = null;
 
@@ -38,6 +40,7 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
             parent::attributeLabels(),
             [
                 'status' => Yii::t('d3paymentsystems', 'Status'),
+                'fullType' => Yii::t('d3paymentsystems', 'Type'),
                 'type' => Yii::t('d3paymentsystems', 'Type'),
                 'subType' => Yii::t('d3paymentsystems', 'Subtype'),
                 'contact_value' => Yii::t('d3paymentsystems', 'ID'),
@@ -53,9 +56,10 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
             parent::rules(),
             [
                 [
-                    ['type', 'subType', 'contact_value', 'status'],
+                    ['fullType', 'type', 'subType', 'contact_value', 'status'],
                     'required',
                 ],
+                ['fullType', 'string'],
                 [
                     'status',
                     'in',
@@ -70,7 +74,10 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
                 ],
                 [
                     'subType',
-                    'validateSubtype',
+                    'in',
+                    'range' => static function () use ($me) {
+                        return $me->subTypeKeys();
+                    }
                 ],
                 [
                     'contact_value',
@@ -83,23 +90,15 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
         );
     }
 
-    public function validateSubtype(): void
-    {
-        if (!$this->type) {
-            return;
-        }
-        if (!in_array($this->subType, $this->typeDef[$this->type], true)) {
-            $this->addError('type', 'Illegal SubType value');
-        }
-    }
+
 
     public function load($data, $formName = null): bool
     {
         if (!parent::load($data, $formName)) {
             return false;
         }
-        if ($this->type) {
-            $list = explode(':', $this->type);
+        if ($this->fullType) {
+            $list = explode(':', $this->fullType);
             if (count($list) === 2) {
                 [$this->type, $this->subType] = $list;
             }
@@ -117,6 +116,28 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
             $this->contact_value . ':' .
             $this->status;
         return true;
+    }
+
+    public function typeList(): array
+    {
+        $list = [];
+        foreach ($this->typeDef as $type => $subTypes) {
+            foreach ($subTypes as $subType) {
+                $list[$type . ':' . $subType] = $type . ' (' . $subType . ')';
+            }
+        }
+        return $list;
+    }
+
+    public function subTypeKeys(): array
+    {
+        $list = [];
+        foreach ($this->typeDef as $subTypes) {
+            foreach ($subTypes as $subType) {
+                $list[] = $subType;
+            }
+        }
+        return $list;
     }
 
     public function afterFind(): void
