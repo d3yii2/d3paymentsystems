@@ -15,13 +15,20 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
 
     public ?D3pPersonContactLuxon $model = null;
     public ?int $contactTypeId = null;
-
+    public array $currencyList = [];
     /**
      * @throws InvalidConfigException
      */
     public function inputPersonSettingValue(ActiveForm $form, $model): string
     {
-        return $form
+        return
+            $form
+                ->field($model, 'currency')
+                ->dropDownList(
+                    array_combine($model->currencyList, $model->currencyList),
+                    ['prompt' => Yii::t('d3persons', 'Select')]
+                ) .
+            $form
                 ->field($model, 'fullName')
                 ->textInput() .
             $form
@@ -55,6 +62,7 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
         $model->person_id = $personId;
         $model->setGroupSettings();
         $model->setStatusActual();
+        $model->currencyList = $this->currencyList;
         return $model;
     }
 
@@ -68,6 +76,7 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
         $model->setAttributes($attributes);
         $model->setIsNewRecord(false);
         $model->afterFind();
+        $model->currencyList = $this->currencyList;
         return $model;
     }
 }

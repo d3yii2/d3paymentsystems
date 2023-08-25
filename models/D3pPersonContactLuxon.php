@@ -23,17 +23,16 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     public ?string $fullName = null;
     public ?string $currency = null;
 
-    public function init(): void
-    {
-        parent::init();
-        $this->currency = CurrenciesDictionary::CURRENCY_USD;
-    }
+    public array $currencyList = [];
+
+
 
     public function attributeLabels(): array
     {
         return array_merge(
             parent::attributeLabels(),
             [
+                'currency' => Yii::t('d3paymentsystems', 'Currency'),
                 'status' => Yii::t('d3paymentsystems', 'Status'),
                 'fullName' => Yii::t('d3paymentsystems', 'Full Name'),
                 'contact_value' => Yii::t('d3paymentsystems', 'Phone'),
@@ -44,13 +43,20 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
 
     public function rules(): ?array
     {
-
+        $me = $this;
         return array_merge(
             parent::rules(),
             [
                 [
-                    ['fullName', 'contact_value', 'status'],
+                    ['currency', 'fullName', 'contact_value', 'status'],
                     'required',
+                ],
+                [
+                    'currency',
+                    'in',
+                    'range' => static function () use ($me){
+                        return $me->currencyList;
+                    }
                 ],
                 [
                     'fullName',
@@ -77,7 +83,8 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
         if (!parent::beforeSave($insert)) {
             return false;
         }
-        $this->contact_value = $this->fullName . ':' .
+        $this->contact_value = $this->currency . ':' .
+            $this->fullName . ':' .
             $this->contact_value . ':' .
             $this->status;
         return true;
@@ -86,7 +93,13 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     public function afterFind(): void
     {
         parent::afterFind();
-        [$this->fullName, $this->contact_value, $this->status] = explode(':', $this->contact_value);
+        $explode = explode(':', $this->contact_value);
+        if (count($explode) === 3) {
+            [$this->fullName, $this->contact_value, $this->status] = $explode;
+            $this->currency = CurrenciesDictionary::CURRENCY_USD;
+        } else {
+            [$this->currency, $this->fullName, $this->contact_value, $this->status] = $explode;
+        }
     }
 
     public function setStatusActual(): void
@@ -121,14 +134,16 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
 
     public function showContactValue(): string
     {
-        return $this->fullName . ' ' .
+        return $this->currency . ' : ' .
+            $this->fullName . ' ' .
             $this->contact_value . ' : ' .
             $this->status;
     }
 
     public function showShortContactValue(): string
     {
-        return $this->fullName . ' ' .
+        return $this->currency . ' : ' .
+            $this->fullName . ' ' .
             $this->contact_value;
     }
 }
