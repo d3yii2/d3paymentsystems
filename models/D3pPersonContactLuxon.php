@@ -4,6 +4,7 @@ namespace d3yii2\d3paymentsystems\models;
 
 use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
 use Yii;
+use yii\validators\EmailValidator;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
 use yii2d3\d3persons\models\D3pPersonContactExtInterface;
 
@@ -35,7 +36,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
                 'currency' => Yii::t('d3paymentsystems', 'Currency'),
                 'status' => Yii::t('d3paymentsystems', 'Status'),
                 'fullName' => Yii::t('d3paymentsystems', 'Full Name'),
-                'contact_value' => Yii::t('d3paymentsystems', 'Phone'),
+                'contact_value' => Yii::t('d3paymentsystems', 'Phone or email'),
             ]
 
         );
@@ -68,13 +69,32 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
                     'range' => self::STATUS_LISTS
                 ],
                 [
-                    'contact_value',
-                    'match',
-                    'pattern' => '/^\+\d{5,15}$/',
-                    'message' => Yii::t('d3paymentsystems', 'Phone number format must be like "+123456789"')
+                    'contact_value','validateContactValue'
+//                    'match',
+//                    'pattern' => '/^\+\d{5,15}$/',
+//                    'message' => Yii::t('d3paymentsystems', 'Phone number format must be like "+123456789"')
                 ]
             ]
         );
+    }
+
+    public function validateContactValue(): void
+    {
+        /** is phone number */
+        if (preg_match('/^\+\d{5,15}$/',$this->contact_value)) {
+            return;
+        }
+
+        $emailValidator = new EmailValidator();
+        if ($emailValidator->validate($this->contact_value)) {
+            return;
+        }
+        $this->clearErrors('contact_value');
+        $this->addError(
+            'contact_value',
+            Yii::t('d3paymentsystems','Must be valid email or phone number like "+371444444"')
+        );
+
     }
 
 
