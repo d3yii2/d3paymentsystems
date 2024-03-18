@@ -13,6 +13,7 @@ use d3yii2\d3paymentsystems\models\D3pPersonContactSkrill;
 
 class PersonSettingSkrill extends Component implements PersonContactTypeInterface
 {
+    public const CODE = 'W-SKRILL';
 
     public const CURRENCY_MULTI = 'MULTI';
     public array $currencyList = [];
