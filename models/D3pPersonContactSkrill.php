@@ -22,6 +22,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
 
     public ?string $currency = null;
     public ?string $status = null;
+    public int $fee = 0;
 
     public array $currencyList = [];
 
@@ -33,6 +34,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
                 'currency' => Yii::t('d3paymentsystems', 'Currency'),
                 'status' => Yii::t('d3paymentsystems', 'Status'),
                 'contact_value' => Yii::t('d3paymentsystems', 'Account'),
+                'fee' => Yii::t('d3paymentsystems', 'Fee%'),
             ]
 
         );
@@ -60,6 +62,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
                     'in',
                     'range' => self::STATUS_LISTS
                 ],
+                ['fee','integer'],
                 [
                     'contact_value',
                     'email'
@@ -76,7 +79,9 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         }
         $this->contact_value = $this->currency . ':' .
             $this->contact_value . ':' .
-            $this->status;
+            $this->status . ':' .
+            $this->fee
+        ;
         return true;
     }
 
@@ -87,8 +92,12 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         if (count($explode) === 1) {
             $this->currency = CurrenciesDictionary::CURRENCY_MULTI;
             $this->status = self::STATUS_ACTUAL;
-        } else {
+            $this->fee = 0;
+        } elseif (count($explode) === 2) {
             [$this->currency, $this->contact_value, $this->status] = $explode;
+            $this->fee = 0;
+        } else {
+            [$this->currency, $this->contact_value, $this->status, $this->fee] = $explode;
         }
     }
 
@@ -122,12 +131,15 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         return $this->status === self::STATUS_CLOSED;
     }
 
-
     public function showContactValue(): string
     {
-        return $this->currency . ' : ' .
+        $value = $this->currency . ' : ' .
             $this->contact_value . ' : ' .
             $this->status;
+        if ($this->fee) {
+            $value .= ' ' . $this->fee . '%';
+        }
+        return $value;
     }
 
     public function showShortContactValue(): string

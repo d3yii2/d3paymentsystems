@@ -19,6 +19,7 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
     public array $currencyList = [];
     public ?int $contactTypeId = null;
 
+
     /**
      * @throws InvalidConfigException
      */
@@ -32,6 +33,9 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
                 ) .
             $form
                 ->field($model, 'contact_value')
+                ->textInput() .
+            $form
+                ->field($model, 'fee')
                 ->textInput() .
             $form
                 ->field($model, 'status')
