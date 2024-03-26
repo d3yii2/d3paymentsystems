@@ -32,7 +32,10 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
                 ->field($model, 'fullName')
                 ->textInput() .
             $form
-                ->field($model, 'contact_value')
+                ->field($model, 'email')
+                ->textInput() .
+            $form
+                ->field($model, 'phone')
                 ->textInput() .
             $form
                 ->field($model, 'status')
