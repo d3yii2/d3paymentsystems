@@ -6,7 +6,6 @@ use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
 use Yii;
 use yii\validators\EmailValidator;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
-use yii2d3\d3persons\models\D3pPersonContactExtInterface;
 
 /**
  * This is the model class for table "d3p_person_contact".
