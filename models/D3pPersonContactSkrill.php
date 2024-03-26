@@ -147,4 +147,9 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         return $this->currency . ' : ' .
             $this->contact_value;
     }
+
+    public function isCurrencyMulti(): bool
+    {
+        return $this->currency === CurrenciesDictionary::CURRENCY_MULTI;
+    }
 }

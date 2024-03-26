@@ -190,4 +190,9 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
     {
         return $this->status === self::STATUS_CLOSED;
     }
+
+    public function isCurrencyMulti(): bool
+    {
+        return $this->currency === CurrenciesDictionary::CURRENCY_MULTI;
+    }
 }

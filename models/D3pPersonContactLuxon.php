@@ -166,4 +166,9 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
             $this->fullName . ' ' .
             $this->contact_value;
     }
+
+    public function isCurrencyMulti(): bool
+    {
+        return $this->currency === CurrenciesDictionary::CURRENCY_MULTI;
+    }
 }
