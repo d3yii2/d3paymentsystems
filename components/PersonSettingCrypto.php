@@ -12,6 +12,7 @@ use yii2d3\d3persons\components\PersonContactTypeInterface;
 
 class PersonSettingCrypto extends Component implements PersonContactTypeInterface
 {
+    public const NAME = 'PersonSettingCrypto';
 
     public const CODE = 'W-CRYPTO';
     public ?D3pPersonContactCrypto $model = null;
