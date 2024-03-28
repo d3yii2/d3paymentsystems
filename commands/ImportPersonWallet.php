@@ -31,9 +31,9 @@ class ImportPersonWallet extends Controller
             'contactTypeId' => $component->contactTypeId,
             'walletComponent' => $component,
             'modelValueMapping' => [
-                'contact_value' => 3,
-                'currency' => 4,
-                'fee' => 5,
+                'contact_value' => 4,
+                'currency' => 5,
+                'fee' => 6,
             ]
         ]);
         
@@ -56,9 +56,9 @@ class ImportPersonWallet extends Controller
             'walletComponent' => $component,
             'mappingColumnIndex' => 2,
             'modelValueMapping' => [
-                'fullName' => 7,
-                'email' => 8,
-                'phone' => 9,
+                'fullName' => 8,
+                'email' => 9,
+                'phone' => 10,
             ],
             'modelDefaultValues' => [
                 'currency' => CurrenciesDictionary::CURRENCY_MULTI,
@@ -82,9 +82,9 @@ class ImportPersonWallet extends Controller
             'sysCompayId' => $sysCompayId,
             'contactTypeId' => $component->contactTypeId,
             'walletComponent' => $component,
-            'mappingColumnIndex' => 2,
+            'mappingColumnIndex' => 3,
             'modelValueMapping' => [
-                'contact_value' => 6,
+                'contact_value' => 7,
             ],
         ]);
         

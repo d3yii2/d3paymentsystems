@@ -91,7 +91,6 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
                 if (!$walletModel) {
 
                     $walletModel = $this->walletComponent->createNewModel($existingPerson->id);
-                    $walletModel->setAttributes($attributes);
 
                     // Missing type correction for Crypto wallets
                     if ($walletModel instanceof D3pPersonContactCrypto) {
@@ -103,6 +102,11 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
                     if ($walletModel instanceof D3pPersonContactCrypto && empty($walletModel->fullType)) {
                         $walletModel->fullType = $this->getFullType($walletModel);
                     }
+                }
+
+                // Error corection
+                if (isset($attributes['fee'])) {
+                    $attributes['fee'] = (float)$attributes['fee'];
                 }
 
                 $walletModel->setAttributes($attributes);
