@@ -6,6 +6,7 @@ use d3yii2\d3paymentsystems\components\PersonSettingCrypto;
 use d3yii2\d3paymentsystems\components\PersonSettingLuxon;
 use d3yii2\d3paymentsystems\components\PersonSettingSkrill;
 use d3yii2\d3paymentsystems\models\D3pPersonContactCrypto;
+use d3yii2\d3paymentsystems\models\D3pPersonContactExtInterface;
 use yii\base\Component;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -29,15 +30,6 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
 
     public array $modelDefaultValues = [];
 
-    protected array $contactTypes = [];
-
-    public function init(): void
-    {
-        parent::init();
-
-        $this->contactTypes = D3pContactTypeDictionary::getClassList();
-    }
-
     /**
      * @param array $row
      * @return bool|D3pPersonContact
@@ -45,89 +37,88 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
      */
     public function proccessRow(array $row)
     {
+        echo $this->lineNumber . ' ';
+
         $existingPerson = $this->getExistingPerson($row);
 
         if ($existingPerson) {
 
-            $existingWallets = [];
+            echo $existingPerson->user->username . ' ';
 
-            foreach ($existingPerson->d3pPersonContacts as $personContact) {
-                $contactTypeClass = $this->contactTypes[$personContact->contact_type] ?? null;
-                $existingWallets[$personContact->contact_type] = $personContact;
+            $personWallets = [];
+            foreach ($existingPerson->d3pPersonContacts as $walletRecord) {
+                if ($walletRecord->contact_type === $this->contactTypeId) {
+                    $walletModel = $walletRecord->findExtendedContactModel();
+                    $personWallets[$walletModel->id] = $walletModel;
+                }
             }
 
             $saveModel = false;
-            
-            if (!isset($existingWallets[$this->contactTypeId])) {
-                $attributes = [];
+
+            $attributes = [];
+
+            foreach ($this->modelValueMapping as $attribute => $position) {
+                $modelParsedValue = $this->getParsedValue($row, $position);
                 
-                foreach ($this->modelValueMapping as $attribute => $position) {
-                    $modelParsedValue = $this->getParsedValue($row, $position);
-                    
-                    // Error corection
-                    if (in_array($attribute, ['fee'])) {
-                        $modelParsedValue = (int)$modelParsedValue;
-                    }
-                    
-                    // Phone validation error corection
-                    if ($attribute === 'phone' && !empty($modelParsedValue)  && substr($modelParsedValue, 0, 1) !== '+') {
-                        $modelParsedValue = '+' . $modelParsedValue;
-                    }
-                    
-                    if (!empty($modelParsedValue)) {
-                        $attributes[$attribute] = $modelParsedValue;
-                    }
+                if (!$modelParsedValue) {
+                    continue;
                 }
 
-                if (!empty($attributes)) {
+                // Phone validation error corection
+                if ($attribute === 'phone' && !empty($modelParsedValue) && substr($modelParsedValue, 0, 1) !== '+') {
+                    $modelParsedValue = '+' . $modelParsedValue;
+                }
 
-                    foreach ($this->modelDefaultValues as $attribute => $value) {
-                        if (!isset($attributes[$attribute])) {
-                            $attributes[$attribute] = $value;
-                        }
+                if (!empty($modelParsedValue)) {
+                    $attributes[$attribute] = $modelParsedValue;
+                }
+            }
+
+            if (!empty($attributes)) {
+                foreach ($this->modelDefaultValues as $defaultAttr => $value) {
+                    if (!isset($attributes[$defaultAttr])) {
+                        $attributes[$defaultAttr] = $value;
                     }
+                }
+            }
+            
+            if (!empty($attributes)) {
+
+                $parsedContactValue = $attributes['contact_value'] ?? null;
+
+                $walletModel = $parsedContactValue ? $this->getExistingWallet($personWallets, $parsedContactValue) : null;
+                
+                if (!$walletModel) {
 
                     $walletModel = $this->walletComponent->createNewModel($existingPerson->id);
                     $walletModel->setAttributes($attributes);
 
+                    // Missing type correction for Crypto wallets
                     if ($walletModel instanceof D3pPersonContactCrypto) {
                         $this->setFullType($walletModel);
                     }
-                    
-                    $saveModel = true;
-                }
-            } else {
-                $existingWallet = $existingWallets[$this->contactTypeId];
-                $model = D3pPersonContact::findForController($existingWallet->id);
-                $walletModel = $model->findExtendedContactModel();
-               
-                $attributes = [];
-                
-                foreach ($this->modelValueMapping as $attribute => $position) {
-                    $modelParsedValue = $this->getParsedValue($row, $position);
-                    if (in_array($attribute, ['fee'])) {
-                        $modelParsedValue = (int)$modelParsedValue;
+                } else {
+                   
+                    // Missing type correction for Crypto wallets
+                    if ($walletModel instanceof D3pPersonContactCrypto && empty($walletModel->fullType)) {
+                        $walletModel->fullType = $this->getFullType($walletModel);
                     }
-
-                    $walletModel->{$attribute} = $modelParsedValue;
                 }
 
-                if ($walletModel instanceof D3pPersonContactCrypto && empty($walletModel->fullType)) {
-                    $walletModel->fullType = $this->getFullType($walletModel);
+                $walletModel->setAttributes($attributes);
+
+                if (!$walletModel->save()) {
+                    echo '[ERROR]' . json_encode($walletModel->errors) . PHP_EOL;
+                    $this->failedCounter++;
+                    return false;
                 }
 
-                $saveModel = true;
+                echo 'OK' . PHP_EOL;
+                return true;
             }
-
-            if ($saveModel && !$walletModel->save()) {
-                //throw new \Exception('Cannot save wallet');
-                echo 'Cannot save wallet for: ' . $existingPerson->user->username;
-            }
-
-            return true;
-
         }
 
+        echo 'Skipped' . PHP_EOL;
         return false;
     }
 
@@ -154,5 +145,21 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
     protected function getFullType($walletModel): string
     {
         return $walletModel->type . ':' . $walletModel->subType;
+    }
+
+    /**
+     * @param array $personWallets
+     * @param string $parsedValue
+     * @return D3pPersonContactExtInterface|null
+     */
+    protected function getExistingWallet(array $personWallets, string $parsedValue): ?D3pPersonContactExtInterface
+    {
+        foreach ($personWallets as $model) {
+            if ($model->contact_value === $parsedValue) {
+                return $model;
+            }
+        }
+        
+        return null;
     }
 }

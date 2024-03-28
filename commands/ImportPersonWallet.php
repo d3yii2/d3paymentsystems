@@ -20,7 +20,7 @@ class ImportPersonWallet extends Controller
      * @param string $fileName
      * @param int $sysCompayId
      */
-    public function actionSkrill(string $fileName, int $sysCompayId)
+    public function actionSkrill(string $fileName, int $sysCompayId = 1)
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingSkrill::NAME};
@@ -44,7 +44,7 @@ class ImportPersonWallet extends Controller
      * @param string $fileName
      * @param int $sysCompayId
      */
-    public function actionLuxon(string $fileName, int $sysCompayId)
+    public function actionLuxon(string $fileName, int $sysCompayId = 1)
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingLuxon::NAME};
@@ -72,7 +72,7 @@ class ImportPersonWallet extends Controller
      * @param string $fileName
      * @param int $sysCompayId
      */
-    public function actionCrypto(string $fileName, int $sysCompayId)
+    public function actionCrypto(string $fileName, int $sysCompayId = 1)
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingCrypto::NAME};
