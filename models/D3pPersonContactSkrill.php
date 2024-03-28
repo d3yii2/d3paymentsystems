@@ -21,7 +21,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
 
     public ?string $currency = null;
     public ?string $status = null;
-    public int $fee = 0;
+    public float $fee = 0;
 
     public array $currencyList = [];
 
@@ -61,7 +61,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
                     'in',
                     'range' => self::STATUS_LISTS
                 ],
-                ['fee','integer'],
+                ['fee','number'],
                 [
                     'contact_value',
                     'email'
