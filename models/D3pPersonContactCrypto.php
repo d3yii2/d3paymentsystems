@@ -28,6 +28,9 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
     public array $typeDef = [];
     public ?string $currency = null;
 
+    public float $fee = 0;
+    public float $recipient_fee = 0;
+
     public function init(): void
     {
         parent::init();

@@ -22,6 +22,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
     public ?string $currency = null;
     public ?string $status = null;
     public float $fee = 0;
+    public float $recipient_fee = 0;
 
     public array $currencyList = [];
 
@@ -33,7 +34,8 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
                 'currency' => Yii::t('d3paymentsystems', 'Currency'),
                 'status' => Yii::t('d3paymentsystems', 'Status'),
                 'contact_value' => Yii::t('d3paymentsystems', 'Account'),
-                'fee' => Yii::t('d3paymentsystems', 'Fee%'),
+                'fee' => Yii::t('d3paymentsystems', 'Total fee%'),
+                'recipient_fee' => Yii::t('d3paymentsystems', 'Recipient fee%'),
             ]
 
         );
@@ -61,7 +63,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
                     'in',
                     'range' => self::STATUS_LISTS
                 ],
-                ['fee','number'],
+                [['fee','recipient_fee'],'number'],
                 [
                     'contact_value',
                     'email'
@@ -79,7 +81,8 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         $this->contact_value = $this->currency . ':' .
             $this->contact_value . ':' .
             $this->status . ':' .
-            $this->fee
+            $this->fee . ':' .
+            $this->recipient_fee
         ;
         return true;
     }
@@ -88,15 +91,17 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
     {
         parent::afterFind();
         $explode = explode(':', $this->contact_value);
+        $this->status = self::STATUS_ACTUAL;
+        $this->fee = 0;
+        $this->recipient_fee = 0;
         if (count($explode) === 1) {
             $this->currency = CurrenciesDictionary::CURRENCY_MULTI;
-            $this->status = self::STATUS_ACTUAL;
-            $this->fee = 0;
         } elseif (count($explode) === 2) {
             [$this->currency, $this->contact_value, $this->status] = $explode;
-            $this->fee = 0;
+        } elseif (count($explode) === 4) {
+            [$this->currency, $this->contact_value, $this->status,$this->fee] = $explode;
         } else {
-            [$this->currency, $this->contact_value, $this->status, $this->fee] = $explode;
+            [$this->currency, $this->contact_value, $this->status, $this->fee, $this->recipient_fee] = $explode;
         }
     }
 

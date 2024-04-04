@@ -6,21 +6,30 @@ use d3yii2\d3paymentsystems\components\PersonSettingCrypto;
 use d3yii2\d3paymentsystems\components\PersonSettingLuxon;
 use d3yii2\d3paymentsystems\components\PersonSettingSkrill;
 use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
-use d3yii2\d3paymentsystems\models\D3pPersonContactCrypto;
+use Exception;
 use Yii;
 use yii\console\Controller;
 use d3yii2\d3paymentsystems\components\ImportPersonSettingWallets;
 use yii2d3\d3persons\components\PersonContactTypeInterface;
-use yii2d3\d3persons\dictionaries\D3pContactTypeDictionary;
-use yii2d3\d3persons\models\D3pContactType;
 
 class ImportPersonWallet extends Controller
 {
     /**
      * @param string $fileName
      * @param int $sysCompayId
+     * @param int $nameColumn
+     * @param int $currencyColumn
+     * @param int $feeColumn
+     * @param int $recipientFeeColumn
      */
-    public function actionSkrill(string $fileName, int $sysCompayId = 1)
+    public function actionSkrill(
+        string $fileName,
+        int $sysCompayId,
+        int $nameColumn,
+        int $currencyColumn,
+        int $feeColumn,
+        int $recipientFeeColumn
+    ):void
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingSkrill::NAME};
@@ -31,9 +40,10 @@ class ImportPersonWallet extends Controller
             'contactTypeId' => $component->contactTypeId,
             'walletComponent' => $component,
             'modelValueMapping' => [
-                'contact_value' => 4,
-                'currency' => 5,
-                'fee' => 6,
+                'contact_value' => $nameColumn,
+                'currency' => $currencyColumn,
+                'fee' => $feeColumn,
+                'recipientFee' => $recipientFeeColumn,
             ]
         ]);
         
@@ -44,7 +54,7 @@ class ImportPersonWallet extends Controller
      * @param string $fileName
      * @param int $sysCompayId
      */
-    public function actionLuxon(string $fileName, int $sysCompayId = 1)
+    public function actionLuxon(string $fileName, int $sysCompayId = 1):void
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingLuxon::NAME};
@@ -72,7 +82,7 @@ class ImportPersonWallet extends Controller
      * @param string $fileName
      * @param int $sysCompayId
      */
-    public function actionCrypto(string $fileName, int $sysCompayId = 1)
+    public function actionCrypto(string $fileName, int $sysCompayId = 1):void
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingCrypto::NAME};
@@ -91,11 +101,11 @@ class ImportPersonWallet extends Controller
         $this->import($importer);
     }
     
-    protected function import($importer)
+    protected function import($importer):void
     {
         try {
             $importer->run();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo $e->getMessage();
             Yii::error($e->getMessage() . PHP_EOL . $e->getMessage() . PHP_EOL . $e->getTraceAsString());
         }

@@ -40,6 +40,9 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
                 ->field($model, 'fee')
                 ->textInput() .
             $form
+                ->field($model, 'recipient_fee')
+                ->textInput() .
+            $form
                 ->field($model, 'status')
                 ->dropDownList(
                     array_combine(D3pPersonContactSkrill::STATUS_LISTS, D3pPersonContactSkrill::STATUS_LISTS),
@@ -52,7 +55,7 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
      * @return D3pPersonContactSkrill
      * @throws Exception
      */
-    public function createNewModel(int $personId)
+    public function createNewModel(int $personId): D3pPersonContactSkrill
     {
         if (!$this->contactTypeId) {
             throw new Exception('Undefined contactTypeId');
@@ -70,7 +73,7 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
      * @param array $attributes
      * @return D3pPersonContactSkrill
      */
-    public function loadModel(array $attributes)
+    public function loadModel(array $attributes): D3pPersonContactSkrill
     {
         $model = new D3pPersonContactSkrill();
         $model->setAttributes($attributes);

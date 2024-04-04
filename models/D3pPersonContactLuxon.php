@@ -26,7 +26,8 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
 
     public array $currencyList = [];
 
-
+    public float $fee = 0;
+    public float $recipient_fee = 0;
 
     public function attributeLabels(): array
     {

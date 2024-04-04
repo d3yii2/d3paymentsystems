@@ -2,22 +2,18 @@
 
 namespace d3yii2\d3paymentsystems\components;
 
-use d3yii2\d3paymentsystems\components\PersonSettingCrypto;
-use d3yii2\d3paymentsystems\components\PersonSettingLuxon;
-use d3yii2\d3paymentsystems\components\PersonSettingSkrill;
 use d3yii2\d3paymentsystems\models\D3pPersonContactCrypto;
 use d3yii2\d3paymentsystems\models\D3pPersonContactExtInterface;
-use yii\base\Component;
-use Yii;
-use yii\helpers\ArrayHelper;
+use Exception;
+use yii\helpers\VarDumper;
 use yii2d3\d3persons\components\ImportPersonDataCSV;
 use yii2d3\d3persons\components\PersonContactTypeInterface;
-use yii2d3\d3persons\dictionaries\D3pContactTypeDictionary;
-use yii2d3\d3persons\models\D3pContactType;
-use yii2d3\d3persons\models\D3pPerson;
-use yii2d3\d3persons\models\D3pPersonContact;
-use yii2d3\d3persons\models\User;
 
+
+/**
+ *
+ * @property-write mixed $fullType
+ */
 class ImportPersonSettingWallets extends ImportPersonDataCSV
 {
     public int $sysCompayId;
@@ -32,10 +28,10 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
 
     /**
      * @param array $row
-     * @return bool|D3pPersonContact
-     * @throws \Exception
+     * @return bool
+     * @throws Exception
      */
-    public function proccessRow(array $row)
+    public function proccessRow(array $row): bool
     {
         echo $this->lineNumber . ' ';
 
@@ -52,11 +48,7 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
                     $personWallets[$walletModel->id] = $walletModel;
                 }
             }
-
-            $saveModel = false;
-
             $attributes = [];
-
             foreach ($this->modelValueMapping as $attribute => $position) {
                 $modelParsedValue = $this->getParsedValue($row, $position);
                 
@@ -65,7 +57,7 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
                 }
 
                 // Phone validation error corection
-                if ($attribute === 'phone' && !empty($modelParsedValue) && substr($modelParsedValue, 0, 1) !== '+') {
+                if ($attribute === 'phone' && !empty($modelParsedValue) && $modelParsedValue[0] !== '+') {
                     $modelParsedValue = '+' . $modelParsedValue;
                 }
 
@@ -96,23 +88,22 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
                     if ($walletModel instanceof D3pPersonContactCrypto) {
                         $this->setFullType($walletModel);
                     }
-                } else {
-                   
-                    // Missing type correction for Crypto wallets
-                    if ($walletModel instanceof D3pPersonContactCrypto && empty($walletModel->fullType)) {
-                        $walletModel->fullType = $this->getFullType($walletModel);
-                    }
+                } else if ($walletModel instanceof D3pPersonContactCrypto && empty($walletModel->fullType)) {
+                    $walletModel->fullType = $this->getFullType($walletModel);
                 }
 
                 // Error corection
                 if (isset($attributes['fee'])) {
                     $attributes['fee'] = (float)$attributes['fee'];
                 }
+                if (isset($attributes['recipientFee'])) {
+                    $attributes['recipientFee'] = (float)$attributes['recipientFee'];
+                }
 
                 $walletModel->setAttributes($attributes);
 
                 if (!$walletModel->save()) {
-                    echo '[ERROR]' . json_encode($walletModel->errors) . PHP_EOL;
+                    echo '[ERROR]' . VarDumper::dumpAsString($walletModel->errors) . PHP_EOL;
                     $this->failedCounter++;
                     return false;
                 }
@@ -129,7 +120,7 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
     /**
      * @param $walletModel
      */
-    protected function setFullType(&$walletModel)
+    protected function setFullType(&$walletModel): void
     {
         // Crypto full value defaults
         $typeList = $walletModel->typeList();
