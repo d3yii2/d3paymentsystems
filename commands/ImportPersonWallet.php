@@ -24,11 +24,11 @@ class ImportPersonWallet extends Controller
      */
     public function actionSkrill(
         string $fileName,
-        int $sysCompayId,
         int $nameColumn,
         int $currencyColumn,
         int $feeColumn,
-        int $recipientFeeColumn
+        int $recipientFeeColumn,
+        int $sysCompayId = 1
     ):void
     {
         /** @var PersonContactTypeInterface $component */
@@ -54,7 +54,12 @@ class ImportPersonWallet extends Controller
      * @param string $fileName
      * @param int $sysCompayId
      */
-    public function actionLuxon(string $fileName, int $sysCompayId = 1):void
+    public function actionLuxon(
+        string $fileName,
+        int $fullNameColumn,
+        int $emailColumn,
+        int $phoneColumn,
+        int $sysCompayId = 1):void
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingLuxon::NAME};
@@ -64,11 +69,11 @@ class ImportPersonWallet extends Controller
             'sysCompayId' => $sysCompayId,
             'contactTypeId' => $component->contactTypeId,
             'walletComponent' => $component,
-            'mappingColumnIndex' => 2,
+            //'mappingColumnIndex' => 2,
             'modelValueMapping' => [
-                'fullName' => 8,
-                'email' => 9,
-                'phone' => 10,
+                'fullName' => $fullNameColumn,
+                'email' => $emailColumn,
+                'phone' => $phoneColumn,
             ],
             'modelDefaultValues' => [
                 'currency' => CurrenciesDictionary::CURRENCY_MULTI,
@@ -82,7 +87,7 @@ class ImportPersonWallet extends Controller
      * @param string $fileName
      * @param int $sysCompayId
      */
-    public function actionCrypto(string $fileName, int $sysCompayId = 1):void
+    public function actionCrypto(string $fileName, $cryptoColumn, int $sysCompayId = 1):void
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingCrypto::NAME};
@@ -92,9 +97,9 @@ class ImportPersonWallet extends Controller
             'sysCompayId' => $sysCompayId,
             'contactTypeId' => $component->contactTypeId,
             'walletComponent' => $component,
-            'mappingColumnIndex' => 3,
+            //'mappingColumnIndex' => 3,
             'modelValueMapping' => [
-                'contact_value' => 7,
+                'contact_value' => $cryptoColumn,
             ],
         ]);
         
