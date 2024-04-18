@@ -16,8 +16,6 @@ use yii2d3\d3persons\components\PersonContactTypeInterface;
  */
 class ImportPersonSettingWallets extends ImportPersonDataCSV
 {
-    public int $sysCompayId;
-
     public int $contactTypeId;
 
     public ?PersonContactTypeInterface $walletComponent = null;

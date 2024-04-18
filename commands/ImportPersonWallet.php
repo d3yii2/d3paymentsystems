@@ -16,7 +16,6 @@ class ImportPersonWallet extends Controller
 {
     /**
      * @param string $fileName
-     * @param int $sysCompayId
      * @param int $nameColumn
      * @param int $currencyColumn
      * @param int $feeColumn
@@ -27,8 +26,7 @@ class ImportPersonWallet extends Controller
         int $nameColumn,
         int $currencyColumn,
         int $feeColumn,
-        int $recipientFeeColumn,
-        int $sysCompayId = 1
+        int $recipientFeeColumn
     ):void
     {
         /** @var PersonContactTypeInterface $component */
@@ -36,7 +34,6 @@ class ImportPersonWallet extends Controller
         
         $importer = new ImportPersonSettingWallets([
             'fileName' => $fileName,
-            'sysCompayId' => $sysCompayId,
             'contactTypeId' => $component->contactTypeId,
             'walletComponent' => $component,
             'modelValueMapping' => [
@@ -52,21 +49,22 @@ class ImportPersonWallet extends Controller
 
     /**
      * @param string $fileName
-     * @param int $sysCompayId
+     * @param int $fullNameColumn
+     * @param int $emailColumn
+     * @param int $phoneColumn
      */
     public function actionLuxon(
         string $fileName,
         int $fullNameColumn,
         int $emailColumn,
-        int $phoneColumn,
-        int $sysCompayId = 1):void
+        int $phoneColumn
+    ):void
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingLuxon::NAME};
         
         $importer = new ImportPersonSettingWallets([
             'fileName' => $fileName,
-            'sysCompayId' => $sysCompayId,
             'contactTypeId' => $component->contactTypeId,
             'walletComponent' => $component,
             //'mappingColumnIndex' => 2,
@@ -85,19 +83,17 @@ class ImportPersonWallet extends Controller
 
     /**
      * @param string $fileName
-     * @param int $sysCompayId
+     * @param $cryptoColumn
      */
-    public function actionCrypto(string $fileName, $cryptoColumn, int $sysCompayId = 1):void
+    public function actionCrypto(string $fileName, $cryptoColumn):void
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingCrypto::NAME};
 
         $importer = new ImportPersonSettingWallets([
             'fileName' => $fileName,
-            'sysCompayId' => $sysCompayId,
             'contactTypeId' => $component->contactTypeId,
             'walletComponent' => $component,
-            //'mappingColumnIndex' => 3,
             'modelValueMapping' => [
                 'contact_value' => $cryptoColumn,
             ],
