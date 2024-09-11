@@ -32,6 +32,18 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
                 ->field($model, 'contact_value')
                 ->textInput() .
             $form
+                ->field($model, 'fee')
+                ->textInput() .
+            $form
+                ->field($model, 'recipient_fee')
+                ->textInput() .
+            $form
+                ->field($model, 'fee_amount')
+                ->textInput() .
+            $form
+                ->field($model, 'recipient_fee_amount')
+                ->textInput() .
+            $form
                 ->field($model, 'status')
                 ->dropDownList(
                     array_combine(

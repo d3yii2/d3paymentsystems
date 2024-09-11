@@ -16,5 +16,9 @@ return [
     'Must be valid phone number like "+371444444"' => 'Должен быть номер телефона, например «+371444444».',
     'Fee%' => 'Fee%',
     'Total fee%' => 'Общая комиссия%',
-    'Recipient fee%' => 'Комиссия получателя%'
+    'Recipient fee%' => 'Комиссия получателя%',
+    'Fee amount' => 'Сумма комиссии',
+    'Recipient fee amount' => 'Сумма комиссии получателя',
+    'Payer' => 'Плательщик',
+    'Receiver' => 'Получатель',
 ];

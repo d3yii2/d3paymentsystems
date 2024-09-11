@@ -43,6 +43,12 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
                 ->field($model, 'recipient_fee')
                 ->textInput() .
             $form
+                ->field($model, 'fee_amount')
+                ->textInput() .
+            $form
+                ->field($model, 'recipient_fee_amount')
+                ->textInput() .
+            $form
                 ->field($model, 'status')
                 ->dropDownList(
                     array_combine(D3pPersonContactSkrill::STATUS_LISTS, D3pPersonContactSkrill::STATUS_LISTS),

@@ -28,6 +28,8 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
 
     public float $fee = 0;
     public float $recipient_fee = 0;
+    public float $fee_amount = 0;
+    public float $recipient_fee_amount = 0;
 
     public function attributeLabels(): array
     {
@@ -39,6 +41,10 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
                 'fullName' => Yii::t('d3paymentsystems', 'Full Name'),
                 'phone' => Yii::t('d3paymentsystems', 'Phone'),
                 'email' => Yii::t('d3paymentsystems', 'Mail'),
+                'fee' => Yii::t('d3paymentsystems', 'Fee%'),
+                'fee_amount' => Yii::t('d3paymentsystems', 'Fee amount'),
+                'recipient_fee' => Yii::t('d3paymentsystems', 'Recipient fee%'),
+                'recipient_fee_amount' => Yii::t('d3paymentsystems', 'Recipient fee amount'),
             ]
         );
     }
@@ -55,7 +61,8 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
                 ['fullName','string',],
                 ['email','email'],
                 ['phone','validatePhone'],
-                ['status','in','range' => self::STATUS_LISTS]
+                ['status','in','range' => self::STATUS_LISTS],
+                [['fee','fee_amount','recipient_fee','recipient_fee_amount'],'number']
             ]
         );
     }
@@ -80,19 +87,33 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
             $this->fullName . ':' .
             $this->email . ':' .
             $this->phone . ':' .
-            $this->status;
+            $this->status . ':' .
+            $this->fee . ':' .
+            $this->recipient_fee . ':' .
+            $this->fee_amount . ':' .
+            $this->recipient_fee_amount;
         return true;
     }
 
     public function afterFind(): void
     {
         parent::afterFind();
+        $this->status = self::STATUS_ACTUAL;
+        $this->fee = 0;
+        $this->recipient_fee = 0;
+        $this->fee_amount = 0;
+        $this->recipient_fee_amount = 0;
         $explode = explode(':', $this->contact_value);
         if (count($explode) === 4) {
             [$this->fullName, $this->email,$this->phone, $this->status] = $explode;
             $this->currency = CurrenciesDictionary::CURRENCY_USD;
-        } else {
+        } elseif (count($explode) === 5)  {
             [$this->currency, $this->fullName, $this->email,$this->phone, $this->status] = $explode;
+        } else {
+            [
+                $this->currency, $this->fullName, $this->email,$this->phone, $this->status,
+                $this->fee, $this->recipient_fee, $this->fee_amount, $this->recipient_fee_amount
+            ] = $explode;
         }
     }
 
@@ -139,6 +160,24 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
             $this->fullName . ' ' .
             implode(' ', $value) . ' : ' .
             $this->status;
+    }
+
+    public function getFeeLabel(): string
+    {
+        $value = [];
+        if ($this->fee) {
+            $value[] = Yii::t('d3paymentsystems', 'Payer') . ': ' . $this->fee . '%';
+        }
+        if ($this->recipient_fee) {
+            $value[] = Yii::t('d3paymentsystems', 'Receiver') . ': '  . $this->recipient_fee . '%';
+        }
+        if ($this->fee_amount) {
+            $value[]  = Yii::t('d3paymentsystems', 'Payer') . ': ' . $this->fee_amount;
+        }
+        if ($this->recipient_fee_amount) {
+            $value[] = Yii::t('d3paymentsystems', 'Receiver') . ': ' . $this->recipient_fee_amount;
+        }
+        return implode(' ', $value);
     }
 
     public function showShortContactValue(): string

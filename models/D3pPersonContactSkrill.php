@@ -23,6 +23,8 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
     public ?string $status = null;
     public float $fee = 0;
     public float $recipient_fee = 0;
+    public float $fee_amount = 0;
+    public float $recipient_fee_amount = 0;
 
     public array $currencyList = [];
 
@@ -34,8 +36,10 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
                 'currency' => Yii::t('d3paymentsystems', 'Currency'),
                 'status' => Yii::t('d3paymentsystems', 'Status'),
                 'contact_value' => Yii::t('d3paymentsystems', 'Account'),
-                'fee' => Yii::t('d3paymentsystems', 'Total fee%'),
+                'fee' => Yii::t('d3paymentsystems', 'Fee%'),
+                'fee_amount' => Yii::t('d3paymentsystems', 'Fee amount'),
                 'recipient_fee' => Yii::t('d3paymentsystems', 'Recipient fee%'),
+                'recipient_fee_amount' => Yii::t('d3paymentsystems', 'Recipient fee amount'),
             ]
 
         );
@@ -63,7 +67,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
                     'in',
                     'range' => self::STATUS_LISTS
                 ],
-                [['fee','recipient_fee'],'number'],
+                [['fee','fee_amount','recipient_fee','recipient_fee_amount'],'number'],
                 [
                     'contact_value',
                     'email'
@@ -82,8 +86,9 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
             $this->contact_value . ':' .
             $this->status . ':' .
             $this->fee . ':' .
-            $this->recipient_fee
-        ;
+            $this->recipient_fee . ':' .
+            $this->fee_amount . ':' .
+            $this->recipient_fee_amount;
         return true;
     }
 
@@ -94,14 +99,26 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         $this->status = self::STATUS_ACTUAL;
         $this->fee = 0;
         $this->recipient_fee = 0;
+        $this->fee_amount = 0;
+        $this->recipient_fee_amount = 0;
         if (count($explode) === 1) {
             $this->currency = CurrenciesDictionary::CURRENCY_MULTI;
         } elseif (count($explode) === 2) {
             [$this->currency, $this->contact_value, $this->status] = $explode;
         } elseif (count($explode) === 4) {
             [$this->currency, $this->contact_value, $this->status,$this->fee] = $explode;
-        } else {
+        } elseif (count($explode) === 5) {
             [$this->currency, $this->contact_value, $this->status, $this->fee, $this->recipient_fee] = $explode;
+        } else {
+            [
+                $this->currency,
+                $this->contact_value,
+                $this->status,
+                $this->fee,
+                $this->recipient_fee,
+                $this->fee_amount,
+                $this->recipient_fee_amount
+            ] = $explode;
         }
     }
 
@@ -137,13 +154,27 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
 
     public function showContactValue(): string
     {
-        $value = $this->currency . ' : ' .
+        return $this->currency . ' : ' .
             $this->contact_value . ' : ' .
             $this->status;
+    }
+
+    public function getFeeLabel(): string
+    {
+        $value = [];
         if ($this->fee) {
-            $value .= ' ' . $this->fee . '%';
+            $value[] = Yii::t('d3paymentsystems', 'Payer') . ': ' . $this->fee . '%';
         }
-        return $value;
+        if ($this->recipient_fee) {
+            $value[] = Yii::t('d3paymentsystems', 'Receiver') . ': '  . $this->recipient_fee . '%';
+        }
+        if ($this->fee_amount) {
+            $value[]  = Yii::t('d3paymentsystems', 'Payer') . ': ' . $this->fee_amount;
+        }
+        if ($this->recipient_fee_amount) {
+            $value[] = Yii::t('d3paymentsystems', 'Receiver') . ': ' . $this->recipient_fee_amount;
+        }
+        return implode(' ', $value);
     }
 
     public function showShortContactValue(): string
@@ -155,5 +186,27 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
     public function isCurrencyMulti(): bool
     {
         return $this->currency === CurrenciesDictionary::CURRENCY_MULTI;
+    }
+
+    public function calcFee(float $amount)
+    {
+        if ($this->fee_amount) {
+            return $this->fee_amount;
+        }
+        if ($this->fee) {
+            return  round($amount * ($this->fee / 100.), 2);
+        }
+        return 0;
+    }
+
+    public function calcRecipientFee(float $amount)
+    {
+        if ($this->recipient_fee_amount) {
+            return $this->recipient_fee_amount;
+        }
+        if ($this->recipient_fee) {
+            return  round($amount * ($this->recipient_fee / 100.), 2);
+        }
+        return 0;
     }
 }

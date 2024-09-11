@@ -30,6 +30,8 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
 
     public float $fee = 0;
     public float $recipient_fee = 0;
+    public float $fee_amount = 0;
+    public float $recipient_fee_amount = 0;
 
     public function init(): void
     {
@@ -47,6 +49,11 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
                 'type' => Yii::t('d3paymentsystems', 'Type'),
                 'subType' => Yii::t('d3paymentsystems', 'Subtype'),
                 'contact_value' => Yii::t('d3paymentsystems', 'ID'),
+                'fee' => Yii::t('d3paymentsystems', 'Fee%'),
+                'fee_amount' => Yii::t('d3paymentsystems', 'Fee amount'),
+                'recipient_fee' => Yii::t('d3paymentsystems', 'Recipient fee%'),
+                'recipient_fee_amount' => Yii::t('d3paymentsystems', 'Recipient fee amount'),
+
             ]
 
         );
@@ -88,7 +95,8 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
                     'pattern' => '/^0x[0-9a-f]{40}$/',
 //                    'message' => Yii::t('d3paymentsystems','Phone number format must be like "+123456789"')
 //                    'enableClientValidation' => false
-                ]
+                ],
+                [['fee','fee_amount','recipient_fee','recipient_fee_amount'],'number'],
             ]
         );
     }
@@ -117,7 +125,11 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
         $this->contact_value = $this->type . ':' .
             $this->subType . ':' .
             $this->contact_value . ':' .
-            $this->status;
+            $this->status . ':' .
+            $this->fee . ':' .
+            $this->recipient_fee . ':' .
+            $this->fee_amount . ':' .
+            $this->recipient_fee_amount . ':';
         return true;
     }
 
@@ -146,7 +158,27 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
     public function afterFind(): void
     {
         parent::afterFind();
-        [$this->type, $this->subType, $this->contact_value, $this->status] = explode(':', $this->contact_value);
+//        [$this->type, $this->subType, $this->contact_value, $this->status] = explode(':', $this->contact_value);
+        $this->fee = 0;
+        $this->recipient_fee = 0;
+        $this->fee_amount = 0;
+        $this->recipient_fee_amount = 0;
+        $explode = explode(':', $this->contact_value);
+        if (count($explode) === 4) {
+            [$this->type, $this->subType, $this->contact_value, $this->status] = $explode;
+        } else {
+            [
+                $this->type,
+                $this->subType,
+                $this->contact_value,
+                $this->status,
+                $this->fee,
+                $this->recipient_fee,
+                $this->fee_amount,
+                $this->recipient_fee_amount
+            ] = $explode;
+        }
+
     }
 
     public function showContactValue(array $options = null): string
@@ -162,6 +194,24 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
         return $this->type . ' ' .
             '(' . $this->subType . '): ' .
             $this->contact_value;
+    }
+
+    public function getFeeLabel(): string
+    {
+        $value = [];
+        if ($this->fee) {
+            $value[] = Yii::t('d3paymentsystems', 'Payer') . ': ' . $this->fee . '%';
+        }
+        if ($this->recipient_fee) {
+            $value[] = Yii::t('d3paymentsystems', 'Receiver') . ': '  . $this->recipient_fee . '%';
+        }
+        if ($this->fee_amount) {
+            $value[]  = Yii::t('d3paymentsystems', 'Payer') . ': ' . $this->fee_amount;
+        }
+        if ($this->recipient_fee_amount) {
+            $value[] = Yii::t('d3paymentsystems', 'Receiver') . ': ' . $this->recipient_fee_amount;
+        }
+        return implode(' ', $value);
     }
 
     public function setStatusActual(): void
