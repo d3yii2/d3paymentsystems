@@ -54,9 +54,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
         return array_merge(
             parent::rules(),
             [
-                [['currency', 'fullName', 'status'],'required'],
-                ['email','required','when' => static function (self $model) {return !$model->phone;}],
-                ['phone','required','when' => static function (self $model) {return !$model->email;}],
+                [['currency', 'fullName', 'status','email'],'required'],
                 ['currency','in','range' => static function (self $model) {return $model->currencyList;}],
                 ['fullName','string',],
                 ['email','email'],
@@ -76,6 +74,37 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
                 Yii::t('d3paymentsystems','Must be valid phone number like "+371444444"')
             );
         }
+    }
+
+    public function validateEmail(): void
+    {
+        if (
+            self::find()
+            ->where([
+                'like',
+                'contact_value',
+                $this->email
+            ])
+            ->andWhere([
+                'contact_type' => $this->contact_type
+            ])
+            ->one()
+        ) {
+            $this->addError('email', Yii::t('d3paymentsystems', 'Email already used other Luxon wallet'));
+        }
+    }
+
+    public function load($data, $formName = null): bool
+    {
+        if (!parent::load($data, $formName)) {
+            return false;
+        }
+        foreach (['fee','fee_amount','recipient_fee','recipient_fee_amount'] as $attributeName) {
+            if (!$this->$attributeName) {
+                $this->$attributeName = 0;
+            }
+        }
+        return true;
     }
 
     public function beforeSave($insert): bool

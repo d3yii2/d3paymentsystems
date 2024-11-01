@@ -66,7 +66,9 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
             parent::rules(),
             [
                 [
-                    ['fullType', 'type', 'subType', 'contact_value', 'status'],
+                    [
+                        'fullType', 'type', 'subType', 'contact_value', 'status'
+                    ],
                     'required',
                 ],
                 ['fullType', 'string'],
@@ -107,6 +109,11 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
     {
         if (!parent::load($data, $formName)) {
             return false;
+        }
+        foreach (['fee','fee_amount','recipient_fee','recipient_fee_amount'] as $attributeName) {
+            if (!$this->$attributeName) {
+                $this->$attributeName = 0;
+            }
         }
         if ($this->fullType) {
             $list = explode(':', $this->fullType);

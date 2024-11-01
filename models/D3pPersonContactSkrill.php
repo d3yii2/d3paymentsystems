@@ -76,6 +76,18 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         );
     }
 
+    public function load($data, $formName = null): bool
+    {
+        if (!parent::load($data, $formName)) {
+            return false;
+        }
+        foreach (['fee','fee_amount','recipient_fee','recipient_fee_amount'] as $attributeName) {
+            if (!$this->$attributeName) {
+                $this->$attributeName = 0;
+            }
+        }
+        return true;
+    }
 
     public function beforeSave($insert): bool
     {
