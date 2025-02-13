@@ -48,6 +48,9 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
             }
             $attributes = [];
             foreach ($this->modelValueMapping as $attribute => $position) {
+                if (!$position) {
+                    continue;
+                }
                 $modelParsedValue = $this->getParsedValue($row, $position);
                 
                 if (!$modelParsedValue) {

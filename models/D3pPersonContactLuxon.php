@@ -54,7 +54,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
         return array_merge(
             parent::rules(),
             [
-                [['currency', 'fullName', 'status','email'],'required'],
+                [['currency', 'status','email'],'required'],
                 ['currency','in','range' => static function (self $model) {return $model->currencyList;}],
                 ['fullName','string',],
                 ['email','email'],
