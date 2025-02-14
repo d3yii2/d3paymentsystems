@@ -112,15 +112,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
         if (!parent::beforeSave($insert)) {
             return false;
         }
-        $this->contact_value = $this->currency . ':' .
-            $this->fullName . ':' .
-            $this->email . ':' .
-            $this->phone . ':' .
-            $this->status . ':' .
-            $this->fee . ':' .
-            $this->recipient_fee . ':' .
-            $this->fee_amount . ':' .
-            $this->recipient_fee_amount;
+        $this->createContactValue();
         return true;
     }
 
@@ -226,5 +218,21 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     public function isCurrencyMulti(): bool
     {
         return $this->currency === CurrenciesDictionary::CURRENCY_MULTI;
+    }
+
+    /**
+     * @return void
+     */
+    public function createContactValue(): void
+    {
+        $this->contact_value = $this->currency . ':' .
+            $this->fullName . ':' .
+            $this->email . ':' .
+            $this->phone . ':' .
+            $this->status . ':' .
+            $this->fee . ':' .
+            $this->recipient_fee . ':' .
+            $this->fee_amount . ':' .
+            $this->recipient_fee_amount;
     }
 }

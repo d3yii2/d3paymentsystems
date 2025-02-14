@@ -35,88 +35,77 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
 
         $existingPerson = $this->getExistingPerson($row);
 
-        if ($existingPerson) {
+        if (!$existingPerson) {
+            return false;
+        }
 
-            echo $existingPerson->user->username . ' ';
+        echo $existingPerson->user->username . ' ';
 
-            $personWallets = [];
-            foreach ($existingPerson->d3pPersonContacts as $walletRecord) {
-                if ($walletRecord->contact_type === $this->contactTypeId) {
-                    $walletModel = $walletRecord->findExtendedContactModel();
-                    $personWallets[$walletModel->id] = $walletModel;
-                }
+        $personWallets = [];
+        foreach ($existingPerson->d3pPersonContacts as $walletRecord) {
+            if ($walletRecord->contact_type === $this->contactTypeId) {
+                $walletModel = $walletRecord->findExtendedContactModel();
+                $personWallets[$walletModel->id] = $walletModel;
             }
-            $attributes = [];
-            foreach ($this->modelValueMapping as $attribute => $position) {
-                if (!$position) {
-                    continue;
-                }
-                $modelParsedValue = $this->getParsedValue($row, $position);
-                
-                if (!$modelParsedValue) {
-                    continue;
-                }
+        }
+        /**
+         * savaac atributus
+         */
+        $attributes = [];
+        foreach ($this->modelValueMapping as $attribute => $position) {
+            if (!$position) {
+                continue;
+            }
+            $modelParsedValue = $this->getParsedValue($row, $position);
 
-                // Phone validation error corection
-                if ($attribute === 'phone' && !empty($modelParsedValue) && $modelParsedValue[0] !== '+') {
-                    $modelParsedValue = '+' . $modelParsedValue;
-                }
-
-                if (!empty($modelParsedValue)) {
-                    $attributes[$attribute] = $modelParsedValue;
-                }
+            if (!$modelParsedValue) {
+                continue;
             }
 
-            if (!empty($attributes)) {
-                foreach ($this->modelDefaultValues as $defaultAttr => $value) {
-                    if (!isset($attributes[$defaultAttr])) {
-                        $attributes[$defaultAttr] = $value;
-                    }
-                }
+            // Phone validation error corection
+            if ($attribute === 'phone' && !empty($modelParsedValue) && $modelParsedValue[0] !== '+') {
+                $modelParsedValue = '+' . $modelParsedValue;
             }
-            
-            if (!empty($attributes)) {
 
-                $parsedContactValue = $attributes['contact_value'] ?? null;
-
-                $walletModel = $parsedContactValue ? $this->getExistingWallet($personWallets, $parsedContactValue) : null;
-                
-                if (!$walletModel) {
-
-                    $walletModel = $this->walletComponent->createNewModel($existingPerson->id);
-
-                    // Missing type correction for Crypto wallets
-                    if ($walletModel instanceof D3pPersonContactCrypto) {
-                        $this->setFullType($walletModel);
-                    }
-                } else if ($walletModel instanceof D3pPersonContactCrypto && empty($walletModel->fullType)) {
-                    $walletModel->fullType = $this->getFullType($walletModel);
-                }
-
-                // Error corection
-                if (isset($attributes['fee'])) {
-                    $attributes['fee'] = (float)$attributes['fee'];
-                }
-                if (isset($attributes['recipientFee'])) {
-                    $attributes['recipientFee'] = (float)$attributes['recipientFee'];
-                }
-
-                $walletModel->setAttributes($attributes);
-
-                if (!$walletModel->save()) {
-                    echo '[ERROR]' . VarDumper::dumpAsString($walletModel->errors) . PHP_EOL;
-                    $this->failedCounter++;
-                    return false;
-                }
-
-                echo 'OK' . PHP_EOL;
-                return true;
+            if (!empty($modelParsedValue)) {
+                $attributes[$attribute] = $modelParsedValue;
+            }
+        }
+        if (empty($attributes)) {
+            echo 'Skipped - empty attributes' . PHP_EOL;
+            return false;
+        }
+        foreach ($this->modelDefaultValues as $defaultAttr => $value) {
+            if (!isset($attributes[$defaultAttr])) {
+                $attributes[$defaultAttr] = $value;
             }
         }
 
-        echo 'Skipped' . PHP_EOL;
-        return false;
-    }
+        $walletModel = $this->walletComponent->createNewModel($existingPerson->id);
+        // Missing type correction for Crypto wallets
+        if ($walletModel instanceof D3pPersonContactCrypto) {
+            $this->setFullType($walletModel);
+        }
+        // Error corection
+        if (isset($attributes['fee'])) {
+            $attributes['fee'] = (float)$attributes['fee'];
+        }
+        if (isset($attributes['recipientFee'])) {
+            $attributes['recipientFee'] = (float)$attributes['recipientFee'];
+        }
+        $walletModel->setAttributes($attributes);
+        $walletModel->createContactValue();
+        if ($existingWalletModel = $this->getExistingWallet($personWallets, $walletModel->contact_value)) {
+            echo ' skip - already exist wallet' . PHP_EOL;
+        }
+        if (!$walletModel->save()) {
+            echo '[ERROR]' . VarDumper::dumpAsString($walletModel->errors) . PHP_EOL;
+            $this->failedCounter++;
+            return false;
+        }
+        echo 'OK' . PHP_EOL;
+        return true;
+}
 
     /**
      * @param $walletModel
@@ -155,7 +144,6 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
                 return $model;
             }
         }
-        
         return null;
     }
 }

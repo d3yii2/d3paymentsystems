@@ -94,13 +94,7 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         if (!parent::beforeSave($insert)) {
             return false;
         }
-        $this->contact_value = $this->currency . ':' .
-            $this->contact_value . ':' .
-            $this->status . ':' .
-            $this->fee . ':' .
-            $this->recipient_fee . ':' .
-            $this->fee_amount . ':' .
-            $this->recipient_fee_amount;
+        $this->createContactValue();
         return true;
     }
 
@@ -220,5 +214,19 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
             return  round($amount * ($this->recipient_fee / 100.), 2);
         }
         return 0;
+    }
+
+    /**
+     * @return void
+     */
+    public function createContactValue(): void
+    {
+        $this->contact_value = $this->currency . ':' .
+            $this->contact_value . ':' .
+            $this->status . ':' .
+            $this->fee . ':' .
+            $this->recipient_fee . ':' .
+            $this->fee_amount . ':' .
+            $this->recipient_fee_amount;
     }
 }

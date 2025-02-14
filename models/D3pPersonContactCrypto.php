@@ -129,14 +129,7 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
         if (!parent::beforeSave($insert)) {
             return false;
         }
-        $this->contact_value = $this->type . ':' .
-            $this->subType . ':' .
-            $this->contact_value . ':' .
-            $this->status . ':' .
-            $this->fee . ':' .
-            $this->recipient_fee . ':' .
-            $this->fee_amount . ':' .
-            $this->recipient_fee_amount . ':';
+        $this->createContactValue();
         return true;
     }
 
@@ -254,5 +247,20 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
     public function isCurrencyMulti(): bool
     {
         return $this->currency === CurrenciesDictionary::CURRENCY_MULTI;
+    }
+
+    /**
+     * @return void
+     */
+    public function createContactValue(): void
+    {
+        $this->contact_value = $this->type . ':' .
+            $this->subType . ':' .
+            $this->contact_value . ':' .
+            $this->status . ':' .
+            $this->fee . ':' .
+            $this->recipient_fee . ':' .
+            $this->fee_amount . ':' .
+            $this->recipient_fee_amount . ':';
     }
 }
