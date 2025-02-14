@@ -41,7 +41,8 @@ class ImportPersonWallet extends Controller
                 'currency' => $currencyColumn,
                 'fee' => $feeColumn,
                 'recipientFee' => $recipientFeeColumn,
-            ]
+            ],
+            'isEqualAttributes' => ['contact_value']
         ]);
         
         $this->import($importer);
@@ -75,7 +76,8 @@ class ImportPersonWallet extends Controller
             ],
             'modelDefaultValues' => [
                 'currency' => CurrenciesDictionary::CURRENCY_MULTI,
-            ]
+            ],
+            'isEqualAttributes' => ['email']
         ]);
         
         $this->import($importer);
@@ -97,6 +99,7 @@ class ImportPersonWallet extends Controller
             'modelValueMapping' => [
                 'contact_value' => $cryptoColumn,
             ],
+            'isEqualAttributes' => ['contact_value']
         ]);
         
         $this->import($importer);

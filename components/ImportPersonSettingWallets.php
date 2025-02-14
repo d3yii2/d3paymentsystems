@@ -25,6 +25,12 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
     public array $modelDefaultValues = [];
 
     /**
+     * attribūti, pec kuriem atpazīst to pašu maciņu
+     * @var string[]
+     */
+    public array $isEqualAttributes = [];
+
+    /**
      * @param array $row
      * @return bool
      * @throws Exception
@@ -94,9 +100,11 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
             $attributes['recipientFee'] = (float)$attributes['recipientFee'];
         }
         $walletModel->setAttributes($attributes);
-        $walletModel->createContactValue();
-        if ($existingWalletModel = $this->getExistingWallet($personWallets, $walletModel->contact_value)) {
-            echo ' skip - already exist wallet' . PHP_EOL;
+//        $walletModel->createContactValue();
+        if ($existingWalletModel = $this->getExistingWallet($personWallets, $attributes)) {
+            $existingWalletModel->setAttributes($attributes);
+            $walletModel = $existingWalletModel;
+            echo ' update exist wallet' . PHP_EOL;
         }
         if (!$walletModel->save()) {
             echo '[ERROR]' . VarDumper::dumpAsString($walletModel->errors) . PHP_EOL;
@@ -134,13 +142,20 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
 
     /**
      * @param array $personWallets
-     * @param string $parsedValue
+     * @param array $attributes
      * @return D3pPersonContactExtInterface|null
      */
-    protected function getExistingWallet(array $personWallets, string $parsedValue): ?D3pPersonContactExtInterface
+    protected function getExistingWallet(array $personWallets, array $attributes): ?D3pPersonContactExtInterface
     {
         foreach ($personWallets as $model) {
-            if ($model->contact_value === $parsedValue) {
+            $isEqual = true;
+            foreach ($this->isEqualAttributes as $attribute) {
+                if ($model->$attribute !== $attributes[$attribute]) {
+                    $isEqual = false;
+                    break;
+                }
+            }
+            if ($isEqual) {
                 return $model;
             }
         }

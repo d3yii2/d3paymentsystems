@@ -9,6 +9,8 @@ use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
 
 /**
  * This is the model class for table "d3p_person_contact".
+ *
+ * @property-read string $feeLabel
  */
 class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonContactExtInterface
 {
@@ -67,7 +69,7 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
             [
                 [
                     [
-                        'fullType', 'type', 'subType', 'contact_value', 'status'
+                        'type', 'subType', 'contact_value', 'status'
                     ],
                     'required',
                 ],
