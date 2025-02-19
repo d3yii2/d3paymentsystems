@@ -105,11 +105,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
         $scope = $formName ?? $this->formName();
         $attributes = &$data[$scope];
         ModelHelper::normalizeFloatDataAttributes(self::FLOAT_ATTRIBUTES, $attributes);
-
-        if (!parent::load($data, $formName)) {
-            return false;
-        }
-        return true;
+        return parent::load($data, $formName);
     }
 
     public function beforeSave($insert): bool
