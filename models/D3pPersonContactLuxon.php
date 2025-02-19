@@ -2,8 +2,10 @@
 
 namespace d3yii2\d3paymentsystems\models;
 
+use d3system\models\ModelHelper;
 use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
 
 /**
@@ -16,6 +18,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     private const STATUS_INACTIVE = 'INACTIVE';
     private const STATUS_CLOSED = 'INACTIVE';
     public const STATUS_LISTS = [self::STATUS_ACTUAL, self::STATUS_INACTIVE, self::STATUS_CLOSED];
+    private const FLOAT_ATTRIBUTES = ['fee','fee_amount','recipient_fee','recipient_fee_amount'];
 
 
     public ?string $status = null;
@@ -60,7 +63,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
                 ['email','email'],
                 ['phone','validatePhone'],
                 ['status','in','range' => self::STATUS_LISTS],
-                [['fee','fee_amount','recipient_fee','recipient_fee_amount'],'number']
+                [self::FLOAT_ATTRIBUTES,'number']
             ]
         );
     }
@@ -94,15 +97,17 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
         }
     }
 
+    /**
+     * @throws InvalidConfigException
+     */
     public function load($data, $formName = null): bool
     {
+        $scope = $formName ?? $this->formName();
+        $attributes = &$data[$scope];
+        ModelHelper::normalizeFloatDataAttributes(self::FLOAT_ATTRIBUTES, $attributes);
+
         if (!parent::load($data, $formName)) {
             return false;
-        }
-        foreach (['fee','fee_amount','recipient_fee','recipient_fee_amount'] as $attributeName) {
-            if (!$this->$attributeName) {
-                $this->$attributeName = 0;
-            }
         }
         return true;
     }
