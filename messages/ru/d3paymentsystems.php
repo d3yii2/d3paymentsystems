@@ -21,4 +21,5 @@ return [
     'Recipient fee amount' => 'Сумма комиссии получателя',
     'Payer' => 'Плательщик',
     'Receiver' => 'Получатель',
+    'Country' => 'Страна'
 ];
