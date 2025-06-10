@@ -2,14 +2,14 @@
 
 namespace d3yii2\d3paymentsystems\models;
 
-use d3system\models\ModelHelper;
 use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
 use Yii;
-use yii\base\InvalidConfigException;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
 
 /**
  * This is the model class for table "d3p_person_contact".
+ *
+ * @property-read string $feeLabel
  */
 class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonContactExtInterface
 {
@@ -18,21 +18,25 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     private const STATUS_INACTIVE = 'INACTIVE';
     private const STATUS_CLOSED = 'INACTIVE';
     public const STATUS_LISTS = [self::STATUS_ACTUAL, self::STATUS_INACTIVE, self::STATUS_CLOSED];
-    private const FLOAT_ATTRIBUTES = ['fee','fee_amount','recipient_fee','recipient_fee_amount'];
 
+    private const COUNTRY_RU = D3paymentsystemsFee::TO_COUNTRY_RU;
+    private const COUNTRY_UA = D3paymentsystemsFee::TO_COUNTRY_UA;
+    private const COUNTRY_BLR = D3paymentsystemsFee::TO_COUNTRY_BLR;
+    private const COUNTRY_WORLD = D3paymentsystemsFee::TO_COUNTRY_WORLD;
+    public const COUNTRY_LISTS = [self::COUNTRY_RU, self::COUNTRY_UA, self::COUNTRY_BLR, self::COUNTRY_WORLD];
+
+    private const TYPE_MAIN = D3paymentsystemsFee::TO_TYPE_MAIN;
+    public const TYPE_LIST = [self::TYPE_MAIN];
 
     public ?string $status = null;
     public ?string $fullName = null;
     public ?string $email = null;
     public ?string $phone = null;
     public ?string $currency = null;
+    public ?string $country = null;
+    public ?string $type = null;
 
     public array $currencyList = [];
-
-    public float $fee = 0;
-    public float $recipient_fee = 0;
-    public float $fee_amount = 0;
-    public float $recipient_fee_amount = 0;
 
     public function attributeLabels(): array
     {
@@ -44,10 +48,8 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
                 'fullName' => Yii::t('d3paymentsystems', 'Full Name'),
                 'phone' => Yii::t('d3paymentsystems', 'Phone'),
                 'email' => Yii::t('d3paymentsystems', 'Mail'),
-                'fee' => Yii::t('d3paymentsystems', 'Fee%'),
-                'fee_amount' => Yii::t('d3paymentsystems', 'Fee amount'),
-                'recipient_fee' => Yii::t('d3paymentsystems', 'Recipient fee%'),
-                'recipient_fee_amount' => Yii::t('d3paymentsystems', 'Recipient fee amount'),
+                'type' => Yii::t('d3paymentsystems', 'Type'),
+                'country' => Yii::t('d3paymentsystems', 'Country'),
             ]
         );
     }
@@ -57,13 +59,15 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
         return array_merge(
             parent::rules(),
             [
-                [['currency', 'status','email'],'required'],
+                [['currency', 'status','email','type'],'required'],
                 ['currency','in','range' => static function (self $model) {return $model->currencyList;}],
+                [['type','country'], 'string'],
+                ['type', 'in', 'range' => self::TYPE_LIST],
+                ['country', 'in', 'range' => self::COUNTRY_LISTS],
                 ['fullName','string',],
                 ['email','email'],
                 ['phone','validatePhone'],
                 ['status','in','range' => self::STATUS_LISTS],
-                [self::FLOAT_ATTRIBUTES,'number']
             ]
         );
     }
@@ -97,17 +101,6 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
         }
     }
 
-    /**
-     * @throws InvalidConfigException
-     */
-    public function load($data, $formName = null): bool
-    {
-        $scope = $formName ?? $this->formName();
-        $attributes = &$data[$scope];
-        ModelHelper::normalizeFloatDataAttributes(self::FLOAT_ATTRIBUTES, $attributes);
-        return parent::load($data, $formName);
-    }
-
     public function beforeSave($insert): bool
     {
         if (!parent::beforeSave($insert)) {
@@ -121,20 +114,24 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     {
         parent::afterFind();
         $this->status = self::STATUS_ACTUAL;
-        $this->fee = 0;
-        $this->recipient_fee = 0;
-        $this->fee_amount = 0;
-        $this->recipient_fee_amount = 0;
+        $this->country = null;
+        $this->type = self::TYPE_MAIN;
         $explode = explode(':', $this->contact_value);
         if (count($explode) === 4) {
             [$this->fullName, $this->email,$this->phone, $this->status] = $explode;
             $this->currency = CurrenciesDictionary::CURRENCY_USD;
         } elseif (count($explode) === 5)  {
             [$this->currency, $this->fullName, $this->email,$this->phone, $this->status] = $explode;
-        } else {
+        } elseif (count($explode) === 7)  {
+            [
+                $this->currency, $this->fullName, $this->email,
+                $this->phone, $this->status, $this->country,
+                $this->type
+            ] = $explode;
+        } elseif (count($explode) === 9)  {
             [
                 $this->currency, $this->fullName, $this->email,$this->phone, $this->status,
-                $this->fee, $this->recipient_fee, $this->fee_amount, $this->recipient_fee_amount
+                $fee, $recipient_fee, $fee_amount, $recipient_fee_amount
             ] = $explode;
         }
     }
@@ -188,16 +185,10 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     {
         $value = [];
         if ($this->fee) {
-            $value[] = Yii::t('d3paymentsystems', 'Payer') . ': ' . $this->fee . '%';
+            $value[] = Yii::t('d3paymentsystems', 'Country') . ': ' . $this->country;
         }
         if ($this->recipient_fee) {
-            $value[] = Yii::t('d3paymentsystems', 'Receiver') . ': '  . $this->recipient_fee . '%';
-        }
-        if ($this->fee_amount) {
-            $value[]  = Yii::t('d3paymentsystems', 'Payer') . ': ' . $this->fee_amount;
-        }
-        if ($this->recipient_fee_amount) {
-            $value[] = Yii::t('d3paymentsystems', 'Receiver') . ': ' . $this->recipient_fee_amount;
+            $value[] = Yii::t('d3paymentsystems', 'Type') . ': '  . $this->type;
         }
         return implode(' ', $value);
     }
@@ -231,9 +222,17 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
             $this->email . ':' .
             $this->phone . ':' .
             $this->status . ':' .
-            $this->fee . ':' .
-            $this->recipient_fee . ':' .
-            $this->fee_amount . ':' .
-            $this->recipient_fee_amount;
+            $this->country . ':' .
+            self::TYPE_MAIN;
+    }
+
+    public static function optsCountry()
+    {
+        return array_combine(self::COUNTRY_LISTS, self::COUNTRY_LISTS);
+    }
+
+    public static function optsType()
+    {
+        return array_combine(self::TYPE_LIST, self::TYPE_LIST);
     }
 }

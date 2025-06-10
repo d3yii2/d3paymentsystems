@@ -19,15 +19,15 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
     private const STATUS_CLOSED = 'INACTIVE';
     public const STATUS_LISTS = [self::STATUS_ACTUAL, self::STATUS_INACTIVE, self::STATUS_CLOSED];
 
-    private const COUNTRY_RU = 'RU';
-    private const COUNTRY_UA = 'UA';
-    private const COUNTRY_BLR = 'BLR';
-    private const COUNTRY_WORLD = 'WORLD';
+    private const COUNTRY_RU = D3paymentsystemsFee::TO_COUNTRY_RU;
+    private const COUNTRY_UA = D3paymentsystemsFee::TO_COUNTRY_UA;
+    private const COUNTRY_BLR = D3paymentsystemsFee::TO_COUNTRY_BLR;
+    private const COUNTRY_WORLD = D3paymentsystemsFee::TO_COUNTRY_WORLD;
     public const COUNTRY_LISTS = [self::COUNTRY_RU, self::COUNTRY_UA, self::COUNTRY_BLR, self::COUNTRY_WORLD];
 
-    private const TYPE_SKRILLER = 'SKRILLER';
-    private const TYPE_TRUE_SKRILL = 'TRUE SKRILL';
-    private const TYPE_TRUE_VIP = 'VIP';
+    private const TYPE_SKRILLER = D3paymentsystemsFee::TO_TYPE_SKRILLER;
+    private const TYPE_TRUE_SKRILL = D3paymentsystemsFee::TO_TYPE_TRUE_SKRILL;
+    private const TYPE_TRUE_VIP = D3paymentsystemsFee::TO_TYPE_VIP;
     public const TYPE_LIST = [self::TYPE_TRUE_SKRILL, self::TYPE_TRUE_VIP, self::TYPE_SKRILLER];
 
 
@@ -180,28 +180,6 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         return $this->currency === CurrenciesDictionary::CURRENCY_MULTI;
     }
 
-    public function calcFee(float $amount)
-    {
-        if ($this->fee_amount) {
-            return $this->fee_amount;
-        }
-        if ($this->fee) {
-            return  round($amount * ($this->fee / 100.), 2);
-        }
-        return 0;
-    }
-
-    public function calcRecipientFee(float $amount)
-    {
-        if ($this->recipient_fee_amount) {
-            return $this->recipient_fee_amount;
-        }
-        if ($this->recipient_fee) {
-            return  round($amount * ($this->recipient_fee / 100.), 2);
-        }
-        return 0;
-    }
-
     /**
      * @return void
      */
@@ -212,5 +190,15 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
             $this->status . ':' .
             $this->country . ':' .
             $this->type;
+    }
+
+    public static function optsCountry()
+    {
+        return array_combine(self::COUNTRY_LISTS, self::COUNTRY_LISTS);
+    }
+
+    public static function optsType()
+    {
+        return array_combine(self::TYPE_LIST, self::TYPE_LIST);
     }
 }

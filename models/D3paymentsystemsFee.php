@@ -34,5 +34,36 @@ class D3paymentsystemsFee extends BaseD3paymentsystemsFee
             SysModelsDictionary::getIdByClassName(D3pPersonContactSkrill::class) => 'Skrill',
         ];
     }
+
+    /**
+     * @throws D3ActiveRecordException
+     */
+    public static function findFromToRow(object $from, object $to): self
+    {
+        return self::findOne([
+            'wallet_sys_model_id' => SysModelsDictionary::getIdByClassName(self::class),
+            'from_country' => $from->country,
+            'to_country' => $to->country,
+            'from_type' => $from->type,
+            'to_type' => $to->type,
+        ]);
+    }
+
+    public function calcSenderFee(float $amount): float
+    {
+        if ((float)$this->sender_fee === 0.) {
+            return 0.;
+        }
+        return  round($amount * ($this->sender_fee / 100.), 2);
+    }
+
+    public function calcReceiverFee(float $amount): float
+    {
+        if ((float)$this->receiver_fee === 0.) {
+            return 0.;
+        }
+        return  round($amount * ($this->receiver_fee / 100.), 2);
+
+    }
 }
 

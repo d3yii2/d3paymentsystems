@@ -2,6 +2,7 @@
 
 namespace d3yii2\d3paymentsystems\components;
 
+use d3yii2\d3paymentsystems\models\D3pPersonContactSkrill;
 use kartik\form\ActiveForm;
 use d3yii2\d3paymentsystems\models\D3pPersonContactCrypto;
 use Yii;
@@ -32,17 +33,10 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
                 ->field($model, 'contact_value')
                 ->textInput() .
             $form
-                ->field($model, 'fee')
-                ->textInput() .
-            $form
-                ->field($model, 'recipient_fee')
-                ->textInput() .
-            $form
-                ->field($model, 'fee_amount')
-                ->textInput() .
-            $form
-                ->field($model, 'recipient_fee_amount')
-                ->textInput() .
+                ->field($model, 'country')
+                ->dropDownList(
+                    D3pPersonContactSkrill::optsCountry(),
+                    ['prompt' => Yii::t('d3paymentsystems', 'Select')]).
             $form
                 ->field($model, 'status')
                 ->dropDownList(

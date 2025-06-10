@@ -21,6 +21,7 @@ $this->addPageButtons(ThButton::widget([
     'icon' => ThButton::ICON_PLUS,
     'type' => ThButton::TYPE_SUCCESS
 ]));
+$this->setPageWiki('d3paymentsystems-fee-index');
 $actionColumnTemplate = '{update}{delete}';
 ?>
 <div class="row">

@@ -15,6 +15,7 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
     public const NAME = 'PersonSettingLuxon';
 
     public const CODE = 'W-LUXON';
+
     public ?D3pPersonContactLuxon $model = null;
     public ?int $contactTypeId = null;
     public array $currencyList = [];
@@ -40,17 +41,16 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
                 ->field($model, 'phone')
                 ->textInput() .
             $form
-                ->field($model, 'fee')
-                ->textInput() .
+                ->field($model, 'country')
+                ->dropDownList(
+                    D3pPersonContactLuxon::optsCountry(),
+                    ['prompt' => Yii::t('d3paymentsystems', 'Select')]).
             $form
-                ->field($model, 'recipient_fee')
-                ->textInput() .
-            $form
-                ->field($model, 'fee_amount')
-                ->textInput() .
-            $form
-                ->field($model, 'recipient_fee_amount')
-                ->textInput() .
+                ->field($model, 'type')
+                ->dropDownList(
+                    D3pPersonContactLuxon::TYPE_LIST,
+                    ['prompt' => Yii::t('d3paymentsystems', 'Select')]).
+
             $form
                 ->field($model, 'status')
                 ->dropDownList(

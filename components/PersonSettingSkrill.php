@@ -37,17 +37,15 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
                 ->field($model, 'contact_value')
                 ->textInput() .
             $form
-                ->field($model, 'fee')
-                ->textInput() .
+                ->field($model, 'country')
+                ->dropDownList(
+                    D3pPersonContactSkrill::optsCountry(),
+                    ['prompt' => Yii::t('d3paymentsystems', 'Select')]).
             $form
-                ->field($model, 'recipient_fee')
-                ->textInput() .
-            $form
-                ->field($model, 'fee_amount')
-                ->textInput() .
-            $form
-                ->field($model, 'recipient_fee_amount')
-                ->textInput() .
+                ->field($model, 'type')
+                ->dropDownList(
+                    D3pPersonContactSkrill::TYPE_LIST,
+                    ['prompt' => Yii::t('d3paymentsystems', 'Select')]).
             $form
                 ->field($model, 'status')
                 ->dropDownList(
