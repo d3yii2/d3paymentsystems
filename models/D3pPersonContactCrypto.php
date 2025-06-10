@@ -2,7 +2,6 @@
 
 namespace d3yii2\d3paymentsystems\models;
 
-use d3system\models\ModelHelper;
 use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
 use Yii;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
@@ -110,13 +109,8 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
         );
     }
 
-
-
     public function load($data, $formName = null): bool
     {
-        $scope = $formName ?? $this->formName();
-        $attributes = &$data[$scope];
-        ModelHelper::normalizeFloatDataAttributes(self::FLOAT_ATTRIBUTES, $attributes);
         if (!parent::load($data, $formName)) {
             return false;
         }
@@ -211,6 +205,12 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
     {
         return Yii::t('d3paymentsystems', 'Country') . ': ' . $this->country;
     }
+
+    public function getWalletCode(): string
+    {
+        return $this->contact_value;
+    }
+
 
     public function setStatusActual(): void
     {

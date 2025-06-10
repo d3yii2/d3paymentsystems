@@ -92,13 +92,7 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
         if ($walletModel instanceof D3pPersonContactCrypto) {
             $this->setFullType($walletModel);
         }
-        // Error corection
-        if (isset($attributes['fee'])) {
-            $attributes['fee'] = (float)$attributes['fee'];
-        }
-        if (isset($attributes['recipientFee'])) {
-            $attributes['recipientFee'] = (float)$attributes['recipientFee'];
-        }
+
         $walletModel->setAttributes($attributes);
 //        $walletModel->createContactValue();
         if ($existingWalletModel = $this->getExistingWallet($personWallets, $attributes)) {

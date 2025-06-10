@@ -38,6 +38,12 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
 
     public array $currencyList = [];
 
+    public function init()
+    {
+        parent::init();
+        $this->type = self::TYPE_MAIN;
+    }
+
     public function attributeLabels(): array
     {
         return array_merge(
@@ -184,13 +190,14 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     public function getFeeLabel(): string
     {
         $value = [];
-        if ($this->fee) {
-            $value[] = Yii::t('d3paymentsystems', 'Country') . ': ' . $this->country;
-        }
-        if ($this->recipient_fee) {
-            $value[] = Yii::t('d3paymentsystems', 'Type') . ': '  . $this->type;
-        }
+        $value[] = Yii::t('d3paymentsystems', 'Country') . ': ' . $this->country;
+        $value[] = Yii::t('d3paymentsystems', 'Type') . ': '  . $this->type;
         return implode(' ', $value);
+    }
+
+    public function getWalletCode(): string
+    {
+        return $this->contact_value;
     }
 
     public function showShortContactValue(): string

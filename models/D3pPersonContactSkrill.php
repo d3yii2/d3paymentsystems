@@ -169,6 +169,11 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
         return implode(' ', $value);
     }
 
+    public function getWalletCode(): string
+    {
+        return $this->contact_value;
+    }
+
     public function showShortContactValue(): string
     {
         return $this->currency . ' : ' .

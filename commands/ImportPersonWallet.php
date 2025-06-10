@@ -25,8 +25,8 @@ class ImportPersonWallet extends Controller
         string $fileName,
         int $nameColumn,
         int $currencyColumn,
-        int $feeColumn,
-        int $recipientFeeColumn
+        int $countryColumn,
+        int $typeColumn
     ):void
     {
         /** @var PersonContactTypeInterface $component */
@@ -39,8 +39,8 @@ class ImportPersonWallet extends Controller
             'modelValueMapping' => [
                 'contact_value' => $nameColumn,
                 'currency' => $currencyColumn,
-                'fee' => $feeColumn,
-                'recipientFee' => $recipientFeeColumn,
+                'country' => $countryColumn,
+                'type' => $typeColumn,
             ],
             'isEqualAttributes' => ['contact_value']
         ]);
@@ -50,15 +50,15 @@ class ImportPersonWallet extends Controller
 
     /**
      * @param string $fileName
-     * @param int $fullNameColumn
      * @param int $emailColumn
-     * @param int $phoneColumn
+     * @param int $countryColumn
+     * @param int $typeColumn
      */
     public function actionLuxon(
         string $fileName,
-        int $fullNameColumn,
         int $emailColumn,
-        int $phoneColumn
+        int $countryColumn,
+        int $typeColumn
     ):void
     {
         /** @var PersonContactTypeInterface $component */
@@ -70,9 +70,9 @@ class ImportPersonWallet extends Controller
             'walletComponent' => $component,
             //'mappingColumnIndex' => 2,
             'modelValueMapping' => [
-                'fullName' => $fullNameColumn,
                 'email' => $emailColumn,
-                'phone' => $phoneColumn,
+                'country' => $countryColumn,
+                'type' => $typeColumn,
             ],
             'modelDefaultValues' => [
                 'currency' => CurrenciesDictionary::CURRENCY_MULTI,
@@ -85,9 +85,16 @@ class ImportPersonWallet extends Controller
 
     /**
      * @param string $fileName
-     * @param $cryptoColumn
+     * @param int $cryptoColumn
+     * @param int $countryColumn
+     * @param int $typeColumn
      */
-    public function actionCrypto(string $fileName, $cryptoColumn):void
+    public function actionCrypto(
+        string $fileName,
+        int $cryptoColumn,
+        int $countryColumn,
+        int $typeColumn
+    ):void
     {
         /** @var PersonContactTypeInterface $component */
         $component = Yii::$app->{PersonSettingCrypto::NAME};
@@ -98,6 +105,8 @@ class ImportPersonWallet extends Controller
             'walletComponent' => $component,
             'modelValueMapping' => [
                 'contact_value' => $cryptoColumn,
+                'country' => $countryColumn,
+                'type' => $typeColumn,
             ],
             'isEqualAttributes' => ['contact_value']
         ]);

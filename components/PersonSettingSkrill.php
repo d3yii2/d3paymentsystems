@@ -44,7 +44,7 @@ class PersonSettingSkrill extends Component implements PersonContactTypeInterfac
             $form
                 ->field($model, 'type')
                 ->dropDownList(
-                    D3pPersonContactSkrill::TYPE_LIST,
+                    D3pPersonContactSkrill::optsType(),
                     ['prompt' => Yii::t('d3paymentsystems', 'Select')]).
             $form
                 ->field($model, 'status')
