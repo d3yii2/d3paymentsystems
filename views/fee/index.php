@@ -58,11 +58,6 @@ $actionColumnTemplate = '{update}{delete}';
                     'class' => ThDataListColumn::class,
                     'list' => $searchModel::optsToCountry(),
                 ],
-                [
-                    'attribute' => 'to_type',
-                    'class' => ThDataListColumn::class,
-                    'list' => $searchModel::optsToType(),
-                ],
             ],
         ]);
         Pjax::end();

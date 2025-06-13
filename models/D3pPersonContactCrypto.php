@@ -26,7 +26,7 @@ class D3pPersonContactCrypto extends BaseD3pPersonContact implements D3pPersonCo
     private const COUNTRY_WORLD = D3paymentsystemsFee::TO_COUNTRY_WORLD;
     public const COUNTRY_LISTS = [self::COUNTRY_RU, self::COUNTRY_UA, self::COUNTRY_BLR, self::COUNTRY_WORLD];
 
-    private const TYPE_BNB = D3paymentsystemsFee::TO_TYPE_BNB;
+    private const TYPE_BNB = D3paymentsystemsFee::FROM_TYPE_BNB;
     public const TYPE_LIST = [self::TYPE_BNB];
 
     public ?string $status = null;

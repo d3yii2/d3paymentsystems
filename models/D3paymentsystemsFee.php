@@ -38,14 +38,13 @@ class D3paymentsystemsFee extends BaseD3paymentsystemsFee
     /**
      * @throws D3ActiveRecordException
      */
-    public static function findFromToRow(object $from, object $to): self
+    public static function findFromToCountryRow(object $from, string $toCountry): ?self
     {
         return self::findOne([
-            'wallet_sys_model_id' => SysModelsDictionary::getIdByClassName(self::class),
+            'wallet_sys_model_id' => SysModelsDictionary::getIdByClassName(get_class($from)),
             'from_country' => $from->country,
-            'to_country' => $to->country,
-            'from_type' => $from->type,
-            'to_type' => $to->type,
+            'to_country' => $toCountry,
+            'from_type' => $from->type
         ]);
     }
 
@@ -65,5 +64,46 @@ class D3paymentsystemsFee extends BaseD3paymentsystemsFee
         return  round($amount * ($this->receiver_fee / 100.), 2);
 
     }
+
+    public function addNotesSenderFeeFond(float $tranAmount, string $notes = null): ?string
+    {
+        if (!$fee = $this->calcSenderFee($tranAmount)) {
+            return $notes;
+        }
+        $notesList = ['Fee fond: ' . $fee];
+        if ($formNotes = trim($notes)) {
+            $notesList[] = $formNotes;
+        }
+        return implode('; ', $notesList);
+    }
+
+    public function addNotesReceiverFee(float $tranAmount, string $notes = null): ?string
+    {
+        if (!$fee = $this->calcReceiverFee($tranAmount)) {
+            return $notes;
+        }
+        $notesList = ['Fee recipient: ' . $fee];
+        if ($formNotes = trim($notes)) {
+            $notesList[] = $formNotes;
+        }
+        return implode('; ', $notesList);
+    }
+
+    public static function getFondFee(string $notes): float
+    {
+        if (preg_match('#Fee fond: (\d+\.?\d*)#',$notes, $match)) {
+            return (float)$match[1];
+        }
+        return 0.;
+    }
+
+    public static function getRecipientFee(string $notes): float
+    {
+        if (preg_match('#Fee recipient: (\d+\.?\d*)#',$notes, $match)) {
+            return (float)$match[1];
+        }
+        return 0.;
+    }
+
 }
 

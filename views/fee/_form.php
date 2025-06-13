@@ -32,9 +32,6 @@ use eaArgonTheme\widget\ThButton;
     <?= $form
         ->field($model, 'to_country')
         ->dropDownList(d3yii2\d3paymentsystems\models\D3paymentsystemsFee::optsToCountry()) ?>
-    <?= $form
-        ->field($model, 'to_type')
-        ->dropDownList(d3yii2\d3paymentsystems\models\D3paymentsystemsFee::optsToType()) ?>
     <?= $form->field($model, 'sender_fee')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'receiver_fee')->textInput(['maxlength' => true]) ?>
     <div class="form-footer">

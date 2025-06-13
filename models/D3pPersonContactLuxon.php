@@ -25,7 +25,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
     private const COUNTRY_WORLD = D3paymentsystemsFee::TO_COUNTRY_WORLD;
     public const COUNTRY_LISTS = [self::COUNTRY_RU, self::COUNTRY_UA, self::COUNTRY_BLR, self::COUNTRY_WORLD];
 
-    private const TYPE_MAIN = D3paymentsystemsFee::TO_TYPE_MAIN;
+    private const TYPE_MAIN = D3paymentsystemsFee::FROM_TYPE_MAIN;
     public const TYPE_LIST = [self::TYPE_MAIN];
 
     public ?string $status = null;

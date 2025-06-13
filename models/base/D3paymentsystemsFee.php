@@ -18,7 +18,6 @@ use yii\db\ActiveRecord;
  * @property string $from_country
  * @property string $from_type
  * @property string $to_country
- * @property string $to_type
  * @property float $sender_fee
  * @property float $receiver_fee
  *
@@ -54,15 +53,6 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     public const TO_COUNTRY_WORLD = 'World';
 
     /**
-    * column to_type ENUM values
-    */
-    public const TO_TYPE_TRUE_SKRILL = 'True skrill';
-    public const TO_TYPE_SKRILLER = 'Skriller';
-    public const TO_TYPE_VIP = 'VIP';
-    public const TO_TYPE_MAIN = 'Main';
-    public const TO_TYPE_BNB = 'bnb';
-
-    /**
      * @inheritdoc
      */
     public static function tableName(): string
@@ -77,11 +67,10 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     {
         return [
             'trimNumbers' => [['id','wallet_sys_model_id','sender_fee','receiver_fee'],D3TrimValidator::class, 'trimOnlyStringValues' => true],
-            'required' => [['wallet_sys_model_id', 'from_country', 'from_type', 'to_country', 'to_type', 'sender_fee', 'receiver_fee'], 'required'],
+            'required' => [['wallet_sys_model_id', 'from_country', 'from_type', 'to_country', 'sender_fee', 'receiver_fee'], 'required'],
             'enum-from_country' => ['from_country', 'in', 'range' => array_keys(self::optsFromCountry())],
             'enum-from_type' => ['from_type', 'in', 'range' => array_keys(self::optsFromType())],
             'enum-to_country' => ['to_country', 'in', 'range' => array_keys(self::optsToCountry())],
-            'enum-to_type' => ['to_type', 'in', 'range' => array_keys(self::optsToType())],
             'decimal-unsigned-4-2' => [
                 ['sender_fee', 'receiver_fee'],
                     'number',
@@ -90,7 +79,7 @@ abstract class D3paymentsystemsFee extends ActiveRecord
                 ],
             'tinyint Unsigned' => [['wallet_sys_model_id'],'integer' ,'min' => 0 ,'max' => 255],
             'smallint Unsigned' => [['id'],'integer' ,'min' => 0 ,'max' => 65535],
-            [['from_country', 'from_type', 'to_country', 'to_type'], 'string'],
+            [['from_country', 'from_type', 'to_country'], 'string'],
             [['sender_fee', 'receiver_fee'], 'number'],
             [['wallet_sys_model_id'], 'exist', 'skipOnError' => true, 'targetClass' => SysModels::class, 'targetAttribute' => ['wallet_sys_model_id' => 'id']]
         ];
@@ -107,7 +96,6 @@ abstract class D3paymentsystemsFee extends ActiveRecord
             'from_country' => Yii::t('d3paymentsystems', 'From country'),
             'from_type' => Yii::t('d3paymentsystems', 'From Type'),
             'to_country' => Yii::t('d3paymentsystems', 'To country'),
-            'to_type' => Yii::t('d3paymentsystems', 'To Type'),
             'sender_fee' => Yii::t('d3paymentsystems', 'Sender fee'),
             'receiver_fee' => Yii::t('d3paymentsystems', 'Receiver fee'),
         ];
@@ -206,35 +194,6 @@ abstract class D3paymentsystemsFee extends ActiveRecord
             self::TO_COUNTRY_BLR => Yii::t('d3paymentsystems', 'BLR'),
             self::TO_COUNTRY_UA => Yii::t('d3paymentsystems', 'UA'),
             self::TO_COUNTRY_WORLD => Yii::t('d3paymentsystems', 'World'),
-        ];
-    }
-
-    /**
-     * get column to_type enum value label
-     * @param string $value
-     * @return string
-     */
-    public static function getToTypeValueLabel(string $value): string
-    {
-        if (!$value) {
-            return '';
-        }
-        $labels = self::optsToType();
-        return $labels[$value] ?? $value;
-    }
-
-    /**
-     * column to_type ENUM value labels
-     * @return string[]
-     */
-    public static function optsToType(): array
-    {
-        return [
-            self::TO_TYPE_TRUE_SKRILL => Yii::t('d3paymentsystems', 'True skrill'),
-            self::TO_TYPE_SKRILLER => Yii::t('d3paymentsystems', 'Skriller'),
-            self::TO_TYPE_VIP => Yii::t('d3paymentsystems', 'VIP'),
-            self::TO_TYPE_MAIN => Yii::t('d3paymentsystems', 'Main'),
-            self::TO_TYPE_BNB => Yii::t('d3paymentsystems', 'bnb'),
         ];
     }
     /**
@@ -434,80 +393,5 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     public function setToCountryWorld(): void
     {
         $this->to_country = self::TO_COUNTRY_WORLD;
-    }
-    /**
-     * @return bool
-     */
-    public function isToTypeTrueSkrill(): bool
-    {
-        return $this->to_type === self::TO_TYPE_TRUE_SKRILL;
-    }
-
-     /**
-     * @return void
-     */
-    public function setToTypeTrueSkrill(): void
-    {
-        $this->to_type = self::TO_TYPE_TRUE_SKRILL;
-    }
-    /**
-     * @return bool
-     */
-    public function isToTypeSkriller(): bool
-    {
-        return $this->to_type === self::TO_TYPE_SKRILLER;
-    }
-
-     /**
-     * @return void
-     */
-    public function setToTypeSkriller(): void
-    {
-        $this->to_type = self::TO_TYPE_SKRILLER;
-    }
-    /**
-     * @return bool
-     */
-    public function isToTypeVIP(): bool
-    {
-        return $this->to_type === self::TO_TYPE_VIP;
-    }
-
-     /**
-     * @return void
-     */
-    public function setToTypeVIP(): void
-    {
-        $this->to_type = self::TO_TYPE_VIP;
-    }
-    /**
-     * @return bool
-     */
-    public function isToTypeMain(): bool
-    {
-        return $this->to_type === self::TO_TYPE_MAIN;
-    }
-
-     /**
-     * @return void
-     */
-    public function setToTypeMain(): void
-    {
-        $this->to_type = self::TO_TYPE_MAIN;
-    }
-    /**
-     * @return bool
-     */
-    public function isToTypeBnb(): bool
-    {
-        return $this->to_type === self::TO_TYPE_BNB;
-    }
-
-     /**
-     * @return void
-     */
-    public function setToTypeBnb(): void
-    {
-        $this->to_type = self::TO_TYPE_BNB;
     }
 }

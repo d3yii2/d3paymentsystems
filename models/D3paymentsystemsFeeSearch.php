@@ -2,31 +2,29 @@
 
 namespace d3yii2\d3paymentsystems\models;
 
-use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use d3yii2\d3paymentsystems\models\D3paymentsystemsFee;
 
 /**
-* D3paymentsystemsFeeSearch represents the model behind the search form about `d3yii2\d3paymentsystems\models\D3paymentsystemsFee`.
-*/
+ * D3paymentsystemsFeeSearch represents the model behind the search form about `d3yii2\d3paymentsystems\models\D3paymentsystemsFee`.
+ */
 class D3paymentsystemsFeeSearch extends D3paymentsystemsFee
 {
     /**
-    * @inheritdoc
-    */
-    public function rules() : array
+     * @inheritdoc
+     */
+    public function rules(): array
     {
-    return [
-    [['id', 'wallet_sys_model_id'], 'integer'],
-            [['from_country', 'from_type', 'to_country', 'to_type'], 'safe'],
+        return [
+            [['id', 'wallet_sys_model_id'], 'integer'],
+            [['from_country', 'from_type', 'to_country'], 'safe'],
             [['sender_fee', 'receiver_fee'], 'number'],
-    ];
+        ];
     }
 
     /**
-    * @inheritdoc
-    */
+     * @inheritdoc
+     */
     public function scenarios()
     {
         // bypass scenarios() implementation in the parent class
@@ -34,12 +32,12 @@ class D3paymentsystemsFeeSearch extends D3paymentsystemsFee
     }
 
     /**
-    * Creates data provider instance with search query applied
-    *
-    * @param array $params
-    *
-    * @return ActiveDataProvider
-    */
+     * Creates data provider instance with search query applied
+     *
+     * @param array $params
+     *
+     * @return ActiveDataProvider
+     */
     public function search($params)
     {
         $query = D3paymentsystemsFee::find();
@@ -71,8 +69,7 @@ class D3paymentsystemsFeeSearch extends D3paymentsystemsFee
             ])
             ->andFilterWhere(['like', 'd3paymentsystems_fee.from_country', $this->from_country])
             ->andFilterWhere(['like', 'd3paymentsystems_fee.from_type', $this->from_type])
-            ->andFilterWhere(['like', 'd3paymentsystems_fee.to_country', $this->to_country])
-            ->andFilterWhere(['like', 'd3paymentsystems_fee.to_type', $this->to_type]);
+            ->andFilterWhere(['like', 'd3paymentsystems_fee.to_country', $this->to_country]);
         return new ActiveDataProvider([
             'query' => $query,
             //'sort' => ['defaultOrder' => ['????' => SORT_ASC]]            
