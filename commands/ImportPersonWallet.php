@@ -6,6 +6,7 @@ use d3yii2\d3paymentsystems\components\PersonSettingCrypto;
 use d3yii2\d3paymentsystems\components\PersonSettingLuxon;
 use d3yii2\d3paymentsystems\components\PersonSettingSkrill;
 use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
+use d3yii2\d3paymentsystems\models\D3paymentsystemsFeeImport;
 use Exception;
 use Yii;
 use yii\console\Controller;
@@ -113,7 +114,20 @@ class ImportPersonWallet extends Controller
         
         $this->import($importer);
     }
-    
+
+    public function actionImportFee(string $fileName):void
+    {
+        $model = new D3paymentsystemsFeeImport();
+        $transaction = Yii::$app->getDb()->beginTransaction();
+        try {
+            $model->import($fileName);
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollback();
+            echo $e->getMessage() . PHP_EOL . $e->getTraceAsString();
+        }
+    }
+
     protected function import($importer):void
     {
         try {
