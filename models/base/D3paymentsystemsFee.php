@@ -31,14 +31,14 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     * column from_country ENUM values
     */
     public const FROM_COUNTRY_RU = 'RU';
-    public const FROM_COUNTRY_BLR = 'BLR';
+    public const FROM_COUNTRY_BY = 'BY';
     public const FROM_COUNTRY_UA = 'UA';
     public const FROM_COUNTRY_WORLD = 'World';
 
     /**
     * column from_type ENUM values
     */
-    public const FROM_TYPE_TRUE_SKRILL = 'True skrill';
+    public const FROM_TYPE_TRUE_SKRILLER = 'True skriller';
     public const FROM_TYPE_SKRILLER = 'Skriller';
     public const FROM_TYPE_VIP = 'VIP';
     public const FROM_TYPE_MAIN = 'Main';
@@ -48,7 +48,7 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     * column to_country ENUM values
     */
     public const TO_COUNTRY_RU = 'RU';
-    public const TO_COUNTRY_BLR = 'BLR';
+    public const TO_COUNTRY_BY = 'BY';
     public const TO_COUNTRY_UA = 'UA';
     public const TO_COUNTRY_WORLD = 'World';
 
@@ -134,7 +134,7 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     {
         return [
             self::FROM_COUNTRY_RU => Yii::t('d3paymentsystems', 'RU'),
-            self::FROM_COUNTRY_BLR => Yii::t('d3paymentsystems', 'BLR'),
+            self::FROM_COUNTRY_BY => Yii::t('d3paymentsystems', 'BY'),
             self::FROM_COUNTRY_UA => Yii::t('d3paymentsystems', 'UA'),
             self::FROM_COUNTRY_WORLD => Yii::t('d3paymentsystems', 'World'),
         ];
@@ -161,7 +161,7 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     public static function optsFromType(): array
     {
         return [
-            self::FROM_TYPE_TRUE_SKRILL => Yii::t('d3paymentsystems', 'True skrill'),
+            self::FROM_TYPE_TRUE_SKRILLER => Yii::t('d3paymentsystems', 'True skriller'),
             self::FROM_TYPE_SKRILLER => Yii::t('d3paymentsystems', 'Skriller'),
             self::FROM_TYPE_VIP => Yii::t('d3paymentsystems', 'VIP'),
             self::FROM_TYPE_MAIN => Yii::t('d3paymentsystems', 'Main'),
@@ -191,7 +191,7 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     {
         return [
             self::TO_COUNTRY_RU => Yii::t('d3paymentsystems', 'RU'),
-            self::TO_COUNTRY_BLR => Yii::t('d3paymentsystems', 'BLR'),
+            self::TO_COUNTRY_BY => Yii::t('d3paymentsystems', 'BY'),
             self::TO_COUNTRY_UA => Yii::t('d3paymentsystems', 'UA'),
             self::TO_COUNTRY_WORLD => Yii::t('d3paymentsystems', 'World'),
         ];
@@ -217,17 +217,17 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     /**
      * @return bool
      */
-    public function isFromCountryBLR(): bool
+    public function isFromCountryBY(): bool
     {
-        return $this->from_country === self::FROM_COUNTRY_BLR;
+        return $this->from_country === self::FROM_COUNTRY_BY;
     }
 
      /**
      * @return void
      */
-    public function setFromCountryBLR(): void
+    public function setFromCountryBY(): void
     {
-        $this->from_country = self::FROM_COUNTRY_BLR;
+        $this->from_country = self::FROM_COUNTRY_BY;
     }
     /**
      * @return bool
@@ -264,7 +264,7 @@ abstract class D3paymentsystemsFee extends ActiveRecord
      */
     public function isFromTypeTrueSkrill(): bool
     {
-        return $this->from_type === self::FROM_TYPE_TRUE_SKRILL;
+        return $this->from_type === self::FROM_TYPE_TRUE_SKRILLER;
     }
 
      /**
@@ -272,7 +272,7 @@ abstract class D3paymentsystemsFee extends ActiveRecord
      */
     public function setFromTypeTrueSkrill(): void
     {
-        $this->from_type = self::FROM_TYPE_TRUE_SKRILL;
+        $this->from_type = self::FROM_TYPE_TRUE_SKRILLER;
     }
     /**
      * @return bool
@@ -352,17 +352,17 @@ abstract class D3paymentsystemsFee extends ActiveRecord
     /**
      * @return bool
      */
-    public function isToCountryBLR(): bool
+    public function isToCountryBY(): bool
     {
-        return $this->to_country === self::TO_COUNTRY_BLR;
+        return $this->to_country === self::TO_COUNTRY_BY;
     }
 
      /**
      * @return void
      */
-    public function setToCountryBLR(): void
+    public function setToCountryBY(): void
     {
-        $this->to_country = self::TO_COUNTRY_BLR;
+        $this->to_country = self::TO_COUNTRY_BY;
     }
     /**
      * @return bool

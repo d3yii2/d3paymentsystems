@@ -35,14 +35,14 @@ class PersonSettingCrypto extends Component implements PersonContactTypeInterfac
             $form
                 ->field($model, 'country')
                 ->dropDownList(
-                    D3pPersonContactSkrill::optsCountry(),
+                    $model::optsCountry(),
                     ['prompt' => Yii::t('d3paymentsystems', 'Select')]).
             $form
                 ->field($model, 'status')
                 ->dropDownList(
                     array_combine(
-                        D3pPersonContactCrypto::STATUS_LISTS,
-                        D3pPersonContactCrypto::STATUS_LISTS
+                        $model::STATUS_LISTS,
+                        $model::STATUS_LISTS
                     ),
                     [
                         'prompt' => Yii::t('d3persons', 'Select')

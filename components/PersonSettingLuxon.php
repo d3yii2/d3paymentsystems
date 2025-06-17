@@ -43,14 +43,14 @@ class PersonSettingLuxon extends Component implements PersonContactTypeInterface
             $form
                 ->field($model, 'country')
                 ->dropDownList(
-                    D3pPersonContactLuxon::optsCountry(),
+                    $model::optsCountry(),
                     ['prompt' => Yii::t('d3paymentsystems', 'Select')]).
             $form
                 ->field($model, 'status')
                 ->dropDownList(
                     array_combine(
-                        D3pPersonContactLuxon::STATUS_LISTS,
-                        D3pPersonContactLuxon::STATUS_LISTS
+                        $model::STATUS_LISTS,
+                        $model::STATUS_LISTS
                     ),
                     [
                         'prompt' => Yii::t('d3persons', 'Select')

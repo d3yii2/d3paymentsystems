@@ -9,9 +9,9 @@ class m250609_212344_d3yii2_d3paymentsystems_fee_create  extends Migration {
             CREATE TABLE `d3paymentsystems_fee` (
               `id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
               `wallet_sys_model_id` tinyint(3) unsigned NOT NULL COMMENT \'Wallet\',
-              `from_country` enum(\'RU\',\'BLR\',\'UA\',\'World\') NOT NULL COMMENT \'From country\',
-              `from_type` enum(\'True skrill\',\'Skriller\',\'VIP\',\'Main\',\'bnb\') NOT NULL COMMENT \'From Type\',
-              `to_country` enum(\'RU\',\'BLR\',\'UA\',\'World\') NOT NULL COMMENT \'To country\',
+              `from_country` enum(\'RU\',\'BY\',\'UA\',\'World\') NOT NULL COMMENT \'From country\',
+              `from_type` enum(\'True skriller\',\'Skriller\',\'VIP\',\'Main\',\'bnb\') NOT NULL COMMENT \'From Type\',
+              `to_country` enum(\'RU\',\'BY\',\'UA\',\'World\') NOT NULL COMMENT \'To country\',
               `to_type` enum(\'True skrill\',\'Skriller\',\'VIP\',\'Main\',\'bnb\') NOT NULL COMMENT \'To Type\',
               `sender_fee` decimal(4,2) unsigned NOT NULL COMMENT \'Sender fee\',
               `receiver_fee` decimal(4,2) unsigned NOT NULL COMMENT \'Receiver fee\',

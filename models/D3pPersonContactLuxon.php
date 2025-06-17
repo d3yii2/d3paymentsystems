@@ -2,6 +2,7 @@
 
 namespace d3yii2\d3paymentsystems\models;
 
+use d3modules\d3classifiers\dictionaries\ClCountriesLangDictionary;
 use d3yii2\d3paymentsystems\dictionaries\CurrenciesDictionary;
 use Yii;
 use yii2d3\d3persons\models\D3pPersonContact as BaseD3pPersonContact;
@@ -21,9 +22,9 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
 
     private const COUNTRY_RU = D3paymentsystemsFee::TO_COUNTRY_RU;
     private const COUNTRY_UA = D3paymentsystemsFee::TO_COUNTRY_UA;
-    private const COUNTRY_BLR = D3paymentsystemsFee::TO_COUNTRY_BLR;
+    private const COUNTRY_BY = D3paymentsystemsFee::TO_COUNTRY_BY;
     private const COUNTRY_WORLD = D3paymentsystemsFee::TO_COUNTRY_WORLD;
-    public const COUNTRY_LISTS = [self::COUNTRY_RU, self::COUNTRY_UA, self::COUNTRY_BLR, self::COUNTRY_WORLD];
+    public const COUNTRY_LISTS = [self::COUNTRY_RU, self::COUNTRY_UA, self::COUNTRY_BY, self::COUNTRY_WORLD];
 
     private const TYPE_MAIN = D3paymentsystemsFee::FROM_TYPE_MAIN;
     public const TYPE_LIST = [self::TYPE_MAIN];
@@ -69,7 +70,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
                 ['currency','in','range' => static function (self $model) {return $model->currencyList;}],
                 [['type','country'], 'string'],
                 ['type', 'in', 'range' => self::TYPE_LIST],
-                ['country', 'in', 'range' => self::COUNTRY_LISTS],
+//                ['country', 'in', 'range' => self::COUNTRY_LISTS],
                 ['fullName','string',],
                 ['email','email'],
                 ['phone','validatePhone'],
@@ -233,9 +234,17 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
             self::TYPE_MAIN;
     }
 
+//    public static function optsCountry()
+//    {
+//        return array_combine(self::COUNTRY_LISTS, self::COUNTRY_LISTS);
+//    }
+
     public static function optsCountry()
     {
-        return array_combine(self::COUNTRY_LISTS, self::COUNTRY_LISTS);
+        $countries = ClCountriesLangDictionary::getCodeNameList(Yii::$app->language);
+        $countries = array_keys($countries);
+        sort($countries);
+        return array_combine($countries, $countries);
     }
 
     public static function optsType()

@@ -21,12 +21,12 @@ class D3pPersonContactSkrill extends BaseD3pPersonContact implements D3pPersonCo
 
     private const COUNTRY_RU = D3paymentsystemsFee::TO_COUNTRY_RU;
     private const COUNTRY_UA = D3paymentsystemsFee::TO_COUNTRY_UA;
-    private const COUNTRY_BLR = D3paymentsystemsFee::TO_COUNTRY_BLR;
+    private const COUNTRY_BY = D3paymentsystemsFee::TO_COUNTRY_BY;
     private const COUNTRY_WORLD = D3paymentsystemsFee::TO_COUNTRY_WORLD;
-    public const COUNTRY_LISTS = [self::COUNTRY_RU, self::COUNTRY_UA, self::COUNTRY_BLR, self::COUNTRY_WORLD];
+    public const COUNTRY_LISTS = [self::COUNTRY_RU, self::COUNTRY_UA, self::COUNTRY_BY, self::COUNTRY_WORLD];
 
     private const TYPE_SKRILLER = D3paymentsystemsFee::FROM_TYPE_SKRILLER;
-    private const TYPE_TRUE_SKRILL = D3paymentsystemsFee::FROM_TYPE_TRUE_SKRILL;
+    private const TYPE_TRUE_SKRILL = D3paymentsystemsFee::FROM_TYPE_TRUE_SKRILLER;
     private const TYPE_TRUE_VIP = D3paymentsystemsFee::FROM_TYPE_VIP;
     public const TYPE_LIST = [self::TYPE_TRUE_SKRILL, self::TYPE_TRUE_VIP, self::TYPE_SKRILLER];
 

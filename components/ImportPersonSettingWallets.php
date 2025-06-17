@@ -72,6 +72,9 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
             if ($attribute === 'phone' && !empty($modelParsedValue) && $modelParsedValue[0] !== '+') {
                 $modelParsedValue = '+' . $modelParsedValue;
             }
+            if ($attribute === 'currency') {
+                $modelParsedValue = strtoupper($modelParsedValue);
+            }
 
             if (!empty($modelParsedValue)) {
                 $attributes[$attribute] = $modelParsedValue;
@@ -101,7 +104,12 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
             echo ' update exist wallet' . PHP_EOL;
         }
         if (!$walletModel->save()) {
-            echo '[ERROR]' . VarDumper::dumpAsString($walletModel->errors) . PHP_EOL;
+            foreach($walletModel->errors as $errorAttribute => $errors) {
+                echo '[error] ' . $errorAttribute .
+                    'value: "' . $walletModel->$errorAttribute . '"' .
+                    'errors:' . implode(';', $errors) . PHP_EOL;
+            }
+            echo '[csv attributes]' . VarDumper::dumpAsString($attributes) . PHP_EOL;
             $this->failedCounter++;
             return false;
         }
@@ -144,7 +152,7 @@ class ImportPersonSettingWallets extends ImportPersonDataCSV
         foreach ($personWallets as $model) {
             $isEqual = true;
             foreach ($this->isEqualAttributes as $attribute) {
-                if ($model->$attribute !== $attributes[$attribute]) {
+                if ($model->$attribute !== ($attributes[$attribute]??null)) {
                     $isEqual = false;
                     break;
                 }
