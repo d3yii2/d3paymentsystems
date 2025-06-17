@@ -197,7 +197,7 @@ class D3pPersonContactLuxon extends BaseD3pPersonContact implements D3pPersonCon
 
     public function getWalletCode(): string
     {
-        return $this->contact_value;
+        return $this->email;
     }
 
     public function showShortContactValue(): string

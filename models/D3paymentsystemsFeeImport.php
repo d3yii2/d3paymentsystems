@@ -73,9 +73,9 @@ class D3paymentsystemsFeeImport extends BaseD3paymentsystemsFee
             return;
         }
         $model = new self();
-        [$walletName, $fromCountry, $fromType, $toCountry, $model->sender_fee,, $model->receiver_fee] = $rowData;
-        $model->sender_fee = str_replace(',', '.', $model->sender_fee);
-        $model->receiver_fee = str_replace(',', '.', $model->receiver_fee);
+        [$walletName, $fromCountry, $fromType, $toCountry,, $senderFee,, $receiverFee] = $rowData;
+        $model->sender_fee = str_replace(',', '.', trim($senderFee));
+        $model->receiver_fee = str_replace(',', '.', trim($receiverFee));
         $model->wallet_sys_model_id = $this->walletsTypeNames[$walletName];
         $model->from_country = $this->countries[strtolower($fromCountry)];
         $model->from_type = $this->walletTypes[strtolower($fromType)];
