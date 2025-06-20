@@ -65,9 +65,31 @@ class D3paymentsystemsFee extends BaseD3paymentsystemsFee
 
     }
 
+    public function calcTotalFee(float $amount): float
+    {
+        $fee = (float)$this->receiver_fee + (float)$this->sender_fee;
+        if ($fee === 0.) {
+            return 0.;
+        }
+        return  round($amount * ($fee / 100.), 2);
+
+    }
+
     public function addNotesSenderFeeFond(float $tranAmount, string $notes = null): ?string
     {
         if (!$fee = $this->calcSenderFee($tranAmount)) {
+            return $notes;
+        }
+        $notesList = ['Fee fond: ' . $fee];
+        if ($formNotes = trim($notes)) {
+            $notesList[] = $formNotes;
+        }
+        return implode('; ', $notesList);
+    }
+
+    public function addNotesTotalFeeFond(float $tranAmount, string $notes = null): ?string
+    {
+        if (!$fee = $this->calcTotalFee($tranAmount)) {
             return $notes;
         }
         $notesList = ['Fee fond: ' . $fee];
